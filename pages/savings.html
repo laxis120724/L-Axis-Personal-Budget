@@ -1,0 +1,136 @@
+<section class="money-page savings-page" aria-labelledby="savings-title">
+    <div class="money-heading">
+        <div>
+            <h1 id="savings-title" tabindex="-1">Savings goals</h1>
+        </div>
+        <button type="button" class="money-button" data-open-money-dialog>+ New savings goal</button>
+    </div>
+    <div class="money-summary">
+        <div class="money-stat"><span>Total goals</span><strong>—</strong></div>
+        <div class="money-stat"><span>Total targets</span><strong>—</strong></div>
+        <div class="money-stat"><span>Total saved</span><strong>—</strong></div>
+        <div class="money-stat money-stat--remaining"><span>Still to save</span><strong>—</strong></div>
+    </div>
+    <section class="money-allocation" aria-labelledby="savings-allocation-title">
+        <div class="money-section-heading">
+            <h2 id="savings-allocation-title">How your savings goals are divided</h2>
+            <span>Target amounts</span>
+        </div>
+        <div class="money-allocation__bar" role="img" aria-label="Allocation unavailable"></div>
+        <ul class="money-allocation__legend"></ul>
+    </section>
+    <div class="money-grid"></div>
+
+    <template data-money-card-template>
+        <article class="money-card">
+            <div class="money-card__heading">
+                <h2></h2>
+                <div class="money-card__actions">
+                    <button type="button" class="money-card__favorite" aria-label="Toggle favorite" aria-pressed="false">
+                        <span aria-hidden="true"></span>
+                    </button>
+                    <div class="money-card__menu">
+                        <button type="button" data-money-menu-toggle
+                                aria-label="Savings actions" aria-expanded="false">&#8943;</button>
+                        <div class="money-card__menu-panel" data-money-menu
+                             role="group" aria-label="Savings actions" hidden>
+                            <button type="button" data-money-action="edit">Edit</button>
+                            <button type="button" class="money-card__menu-danger"
+                                    data-money-action="delete">Delete</button>
+                            <button type="button" data-money-action="notifications"
+                                    role="switch" aria-checked="false">
+                                <span>Notifications</span>
+                                <span class="money-card__notification-status">
+                                    <span data-money-notification-state aria-hidden="true">Off</span>
+                                    <span class="money-card__notification-toggle" aria-hidden="true"></span>
+                                </span>
+                            </button>
+                            <p class="money-menu-error" data-money-menu-error role="alert" hidden></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="money-card__description"></p>
+            <div class="money-card__limit">
+                <span>Target amount</span>
+                <strong></strong>
+            </div>
+            <div class="money-card__progress-label">
+                <span></span>
+                <strong></strong>
+            </div>
+            <progress max="1" value="0" aria-label="Savings progress"></progress>
+            <p class="money-card__remaining"><strong></strong></p>
+            <div class="money-card__footer">
+                <span></span>
+                <span class="money-alert"></span>
+            </div>
+        </article>
+    </template>
+
+    <dialog class="money-dialog" data-money-form-dialog aria-labelledby="savings-dialog-title">
+        <section class="money-create">
+            <div class="money-dialog__heading">
+                <h2 id="savings-dialog-title" data-money-form-title>New savings goal</h2>
+                <button type="button" class="money-dialog__close" data-close-money aria-label="Close new savings goal">&times;</button>
+            </div>
+            <p data-money-form-description>Set a goal, a target amount, and a date to work toward.</p>
+            <form class="money-form" data-money-form>
+                <div class="money-field money-field--full">
+                    <label for="savings-name">Goal name</label>
+                    <input id="savings-name" name="name" type="text" placeholder="e.g. Emergency fund" required autofocus maxlength="80">
+                </div>
+                <div class="money-field">
+                    <label for="savings-target">Target amount</label>
+                    <input id="savings-target" name="target" type="number" placeholder="0.00" min="0.01" step="0.01" required>
+                </div>
+                <div class="money-field">
+                    <label for="savings-saved">Amount already saved</label>
+                    <input id="savings-saved" name="saved" type="number" placeholder="0.00" min="0" step="0.01" required>
+                </div>
+                <div class="money-field">
+                    <label for="savings-start">Starting date</label>
+                    <input id="savings-start" name="start" type="date" required>
+                </div>
+                <div class="money-field">
+                    <label for="savings-targetDate">Target date</label>
+                    <input id="savings-targetDate" name="targetDate" type="date" required>
+                </div>
+                <div class="money-field money-field--full">
+                    <label for="savings-description">Description</label>
+                    <textarea id="savings-description" name="description" rows="3" placeholder="Add a note" maxlength="2000"></textarea>
+                </div>
+                <label class="money-alert-setting">
+                    <input type="checkbox" name="alerts" checked>
+                    <span><strong>Enable alerts</strong><small>Remind me about my savings goal.</small></span>
+                </label>
+                <p class="money-form__error" data-money-form-error role="alert" hidden></p>
+                <div class="money-form__actions">
+                    <button type="button" class="money-button money-button--secondary" data-close-money>Cancel</button>
+                    <button type="submit" class="money-button">Create goal</button>
+                </div>
+            </form>
+        </section>
+    </dialog>
+
+    <dialog class="money-dialog money-delete-dialog" data-money-delete-dialog
+            aria-labelledby="savings-delete-title" aria-describedby="savings-delete-description">
+        <section class="money-create">
+            <div class="money-dialog__heading">
+                <h2 id="savings-delete-title">Delete savings goal</h2>
+                <button type="button" class="money-dialog__close" data-close-money-delete
+                        aria-label="Close delete savings goal">&times;</button>
+            </div>
+            <p id="savings-delete-description"><strong data-money-delete-name>This savings goal</strong>
+                will be permanently deleted and cannot be restored.</p>
+            <form class="money-delete-dialog__form" data-money-delete-form>
+                <p class="money-form__error" data-money-delete-error role="alert" hidden></p>
+                <div class="money-form__actions">
+                    <button type="button" class="money-button money-button--secondary"
+                            data-close-money-delete autofocus>Cancel</button>
+                    <button type="submit" class="money-button money-button--danger">Confirm delete</button>
+                </div>
+            </form>
+        </section>
+    </dialog>
+</section>

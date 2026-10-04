@@ -1,0 +1,205 @@
+<section class="transaction-page" aria-labelledby="transaction-title">
+    <div class="transaction-heading">
+        <div>
+            <h1 id="transaction-title">Transactions</h1>
+        </div>
+        <button type="button" class="money-button transaction-add" data-open-transaction>
+            <span aria-hidden="true">+</span> Add transaction
+        </button>
+    </div>
+
+    <div class="transaction-summary" aria-label="Transaction overview">
+        <article class="transaction-stat transaction-stat--income">
+            <span class="transaction-stat__label">Money in</span>
+            <strong data-transaction-income>&mdash;</strong>
+            <small>Income and repayments in this view</small>
+        </article>
+        <article class="transaction-stat transaction-stat--outgoing">
+            <span class="transaction-stat__label">Money out</span>
+            <strong data-transaction-outgoing>&mdash;</strong>
+            <small>Spending and payments in this view</small>
+        </article>
+        <article class="transaction-stat transaction-stat--net">
+            <span class="transaction-stat__label">Net cash flow</span>
+            <strong data-transaction-net>&mdash;</strong>
+            <small>Money in minus money out in this view</small>
+        </article>
+        <article class="transaction-stat transaction-stat--budget">
+            <span class="transaction-stat__label">Budget available</span>
+            <strong data-transaction-budget>&mdash;</strong>
+            <small>Remaining across all your budgets</small>
+        </article>
+    </div>
+
+    <section class="transaction-allocation" aria-labelledby="transaction-allocation-title">
+        <div class="transaction-section-heading">
+            <h2 id="transaction-allocation-title">Where your money went</h2>
+            <span>Category allocation</span>
+        </div>
+        <div class="transaction-allocation__bar" data-transaction-allocation-bar
+             role="img" aria-label="Category allocation unavailable" hidden></div>
+        <ul class="transaction-allocation__legend" data-transaction-allocation-legend hidden></ul>
+        <p class="transaction-allocation__empty" data-transaction-allocation-empty>
+            Your spending allocation will appear here after you add a transaction.
+        </p>
+    </section>
+
+    <section class="transaction-table-card" aria-labelledby="transaction-history-title">
+        <div class="transaction-section-heading transaction-history-heading">
+            <div>
+                <h2 id="transaction-history-title">Transaction history</h2>
+            </div>
+            <span class="transaction-page-size">50 per page</span>
+        </div>
+
+        <form class="transaction-filters" role="search" aria-label="Find transactions">
+            <div class="transaction-filter transaction-filter--search">
+                <label for="transaction-search">Search</label>
+                <input id="transaction-search" name="search" type="search"
+                       placeholder="Search a category, name, or description"
+                       data-transaction-search autocomplete="off">
+            </div>
+            <div class="transaction-filter">
+                <label for="transaction-type-filter">Transaction type</label>
+                <select id="transaction-type-filter" data-transaction-type-filter>
+                    <option value="all">All types</option>
+                    <option value="income">Income</option>
+                    <option value="budget">Budget spending</option>
+                    <option value="savings">Savings deposit</option>
+                    <option value="debt">Debt payment</option>
+                    <option value="lend">Lend repayment</option>
+                    <option value="subscriptions">Subscription payment</option>
+                </select>
+            </div>
+            <div class="transaction-filter">
+                <label for="transaction-from">From</label>
+                <input id="transaction-from" type="date" data-transaction-from>
+            </div>
+            <div class="transaction-filter">
+                <label for="transaction-to">To</label>
+                <input id="transaction-to" type="date" data-transaction-to>
+            </div>
+            <div class="transaction-filter">
+                <label for="transaction-sort">Sort by</label>
+                <select id="transaction-sort" data-transaction-sort>
+                    <option value="newest">Newest first</option>
+                    <option value="oldest">Oldest first</option>
+                    <option value="amount-high">Amount: high to low</option>
+                    <option value="amount-low">Amount: low to high</option>
+                </select>
+            </div>
+            <button type="button" class="transaction-reset" data-transaction-reset>Reset filters</button>
+        </form>
+
+        <div class="transaction-table__viewport" tabindex="0" role="region"
+             aria-label="Transaction history table">
+            <table class="transaction-table">
+                <caption class="transaction-visually-hidden">Transactions with dates, categories, descriptions, amounts, and edit or delete actions</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Date</th>
+                        <th scope="col">Transaction</th>
+                        <th scope="col">Category / item</th>
+                        <th scope="col">Description</th>
+                        <th scope="col" class="transaction-table__number">Money in</th>
+                        <th scope="col" class="transaction-table__number">Money out</th>
+                        <th scope="col" class="transaction-table__actions">Actions</th>
+                    </tr>
+                </thead>
+                <tbody data-transaction-rows></tbody>
+            </table>
+        </div>
+        <p class="transaction-status" data-transaction-status role="status" hidden></p>
+
+        <div class="transaction-pagination">
+            <span data-transaction-range>Showing 0 transactions</span>
+            <nav class="transaction-pagination__controls" aria-label="Transaction pages">
+                <button type="button" class="transaction-page-button" data-transaction-prev
+                        aria-label="Previous transaction page" disabled>
+                    <span aria-hidden="true">&larr;</span>
+                </button>
+                <span data-transaction-page aria-live="polite">Page 1 of 1</span>
+                <button type="button" class="transaction-page-button" data-transaction-next
+                        aria-label="Next transaction page" disabled>
+                    <span aria-hidden="true">&rarr;</span>
+                </button>
+            </nav>
+        </div>
+    </section>
+
+    <dialog class="money-dialog transaction-dialog" data-transaction-dialog
+            aria-labelledby="transaction-form-title" aria-describedby="transaction-form-hint">
+        <section class="money-create">
+            <div class="money-dialog__heading">
+                <h2 id="transaction-form-title" data-transaction-form-title>Add transaction</h2>
+                <button type="button" class="money-dialog__close" data-close-transaction
+                        aria-label="Close transaction form">&times;</button>
+            </div>
+            <p id="transaction-form-hint" data-transaction-form-hint>
+                Choose a transaction type, then enter the amount and date.
+            </p>
+            <form class="money-form" data-transaction-form>
+                <div class="money-field money-field--full">
+                    <label for="transaction-form-type">Transaction type</label>
+                    <select id="transaction-form-type" name="type" required autofocus>
+                        <option value="" disabled>Choose a transaction type</option>
+                        <option value="income">Income</option>
+                        <option value="budget">Budget spending</option>
+                        <option value="savings">Savings deposit</option>
+                        <option value="debt">Debt payment</option>
+                        <option value="lend">Lend repayment</option>
+                        <option value="subscriptions">Subscription payment</option>
+                    </select>
+                </div>
+                <div class="money-field money-field--full" data-transaction-item-field hidden>
+                    <label for="transaction-form-item">Category / item</label>
+                    <select id="transaction-form-item" name="itemId" data-transaction-item disabled>
+                        <option value="">Choose a category / item</option>
+                    </select>
+                </div>
+                <div class="money-field">
+                    <label for="transaction-form-amount">Amount</label>
+                    <input id="transaction-form-amount" name="amount" type="number"
+                           min="0.01" step="0.01" placeholder="0.00" required>
+                </div>
+                <div class="money-field">
+                    <label for="transaction-form-date">Date</label>
+                    <input id="transaction-form-date" name="date" type="date" required>
+                </div>
+                <div class="money-field money-field--full">
+                    <label for="transaction-form-description">Description <span class="transaction-optional">(optional)</span></label>
+                    <textarea id="transaction-form-description" name="description" rows="3"
+                              maxlength="2000" placeholder="Add a note about this transaction"></textarea>
+                </div>
+                <p class="money-form__error" data-transaction-form-error role="alert" hidden></p>
+                <div class="money-form__actions">
+                    <button type="button" class="money-button money-button--secondary"
+                            data-close-transaction>Cancel</button>
+                    <button type="submit" class="money-button">Save transaction</button>
+                </div>
+            </form>
+        </section>
+    </dialog>
+
+    <dialog class="money-dialog money-delete-dialog transaction-dialog" data-transaction-delete-dialog
+            aria-labelledby="transaction-delete-title" aria-describedby="transaction-delete-description">
+        <section class="money-create">
+            <div class="money-dialog__heading">
+                <h2 id="transaction-delete-title">Delete transaction</h2>
+                <button type="button" class="money-dialog__close" data-close-transaction-delete
+                        aria-label="Close delete transaction">&times;</button>
+            </div>
+            <p id="transaction-delete-description"><strong data-transaction-delete-name>This transaction</strong>
+                will be permanently deleted. Any amount linked to a category will be reversed
+                from that category's balance. This cannot be undone.</p>
+            <form class="money-delete-dialog__form" data-transaction-delete-form>
+                <p class="money-form__error" data-transaction-delete-error role="alert" hidden></p>
+                <div class="money-form__actions">
+                    <button type="button" class="money-button money-button--secondary"
+                            data-close-transaction-delete autofocus>Cancel</button>
+                    <button type="submit" class="money-button money-button--danger">Confirm delete</button>
+                </div>
+            </form>
+        </section>
+    </dialog>
+</section>

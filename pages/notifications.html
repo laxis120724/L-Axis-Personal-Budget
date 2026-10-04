@@ -1,0 +1,17 @@
+<section class="notifications-page" data-notifications-page aria-labelledby="notifications-title">
+    <div class="notifications-page__heading">
+        <h1 id="notifications-title" tabindex="-1">Notifications</h1>
+        <button type="button" class="money-button money-button--secondary" data-notifications-read-all>Mark all as read</button>
+    </div>
+    <div class="notifications-page__toolbar">
+        <div class="notifications-filters" aria-label="Filter notifications">
+            <button type="button" data-notifications-filter="all" aria-pressed="true">All</button>
+            <button type="button" data-notifications-filter="unread" aria-pressed="false">Unread</button>
+        </div>
+        <span data-notifications-total></span>
+    </div>
+    <p class="invitations-status" data-invitations-status role="status" hidden></p>
+    <div class="notifications-page__list invitations-list" data-invitations-list>
+        <p class="invitations-empty">Loading notifications…</p>
+    </div>
+</section>

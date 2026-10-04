@@ -1,0 +1,141 @@
+<section class="money-page lend-page" aria-labelledby="lend-title">
+    <div class="money-heading">
+        <div>
+            <h1 id="lend-title" tabindex="-1">Money lent</h1>
+        </div>
+        <button type="button" class="money-button" data-open-money-dialog>+ New lend</button>
+    </div>
+    <div class="money-summary">
+        <div class="money-stat"><span>Total lends</span><strong>—</strong></div>
+        <div class="money-stat"><span>Total lent</span><strong>—</strong></div>
+        <div class="money-stat"><span>Total repaid</span><strong>—</strong></div>
+        <div class="money-stat money-stat--remaining"><span>Still to receive</span><strong>—</strong></div>
+    </div>
+    <section class="money-allocation" aria-labelledby="lend-allocation-title">
+        <div class="money-section-heading">
+            <h2 id="lend-allocation-title">How your lending is divided</h2>
+            <span>Amounts lent</span>
+        </div>
+        <div class="money-allocation__bar" role="img" aria-label="Allocation unavailable"></div>
+        <ul class="money-allocation__legend"></ul>
+    </section>
+    <div class="money-grid"></div>
+
+    <template data-money-card-template>
+        <article class="money-card">
+            <div class="money-card__heading">
+                <h2></h2>
+                <div class="money-card__actions">
+                    <button type="button" class="money-card__favorite" aria-label="Toggle favorite" aria-pressed="false">
+                        <span aria-hidden="true"></span>
+                    </button>
+                    <div class="money-card__menu">
+                        <button type="button" data-money-menu-toggle
+                                aria-label="Lend actions" aria-expanded="false">&#8943;</button>
+                        <div class="money-card__menu-panel" data-money-menu
+                             role="group" aria-label="Lend actions" hidden>
+                            <button type="button" data-money-action="edit">Edit</button>
+                            <button type="button" class="money-card__menu-danger"
+                                    data-money-action="delete">Delete</button>
+                            <button type="button" data-money-action="notifications"
+                                    role="switch" aria-checked="false">
+                                <span>Notifications</span>
+                                <span class="money-card__notification-status">
+                                    <span data-money-notification-state aria-hidden="true">Off</span>
+                                    <span class="money-card__notification-toggle" aria-hidden="true"></span>
+                                </span>
+                            </button>
+                            <p class="money-menu-error" data-money-menu-error role="alert" hidden></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="money-card__person"></p>
+            <p class="money-card__description"></p>
+            <div class="money-card__limit">
+                <span>Amount lent</span>
+                <strong></strong>
+            </div>
+            <div class="money-card__progress-label">
+                <span></span>
+                <strong></strong>
+            </div>
+            <progress max="1" value="0" aria-label="Lend repaid"></progress>
+            <p class="money-card__remaining"><strong></strong></p>
+            <div class="money-card__footer">
+                <span></span>
+                <span class="money-alert"></span>
+            </div>
+        </article>
+    </template>
+
+    <dialog class="money-dialog" data-money-form-dialog aria-labelledby="lend-dialog-title">
+        <section class="money-create">
+            <div class="money-dialog__heading">
+                <h2 id="lend-dialog-title" data-money-form-title>New lend</h2>
+                <button type="button" class="money-dialog__close" data-close-money aria-label="Close new lend">&times;</button>
+            </div>
+            <p data-money-form-description>Record who borrowed the money and when you expect repayment.</p>
+            <form class="money-form" data-money-form>
+                <div class="money-field money-field--full">
+                    <label for="lend-name">Lend name</label>
+                    <input id="lend-name" name="name" type="text" placeholder="e.g. Moving expenses" required autofocus maxlength="80">
+                </div>
+                <div class="money-field money-field--full">
+                    <label for="lend-borrower">Borrower name</label>
+                    <input id="lend-borrower" name="borrower" type="text" placeholder="Who borrowed the money?" required>
+                </div>
+                <div class="money-field">
+                    <label for="lend-amount">Amount lent</label>
+                    <input id="lend-amount" name="amount" type="number" placeholder="0.00" min="0.01" step="0.01" required>
+                </div>
+                <div class="money-field">
+                    <label for="lend-repaid">Amount already repaid</label>
+                    <input id="lend-repaid" name="repaid" type="number" placeholder="0.00" min="0" step="0.01" required>
+                </div>
+                <div class="money-field">
+                    <label for="lend-lentDate">Date lent</label>
+                    <input id="lend-lentDate" name="lentDate" type="date" required>
+                </div>
+                <div class="money-field">
+                    <label for="lend-due">Repayment due date</label>
+                    <input id="lend-due" name="due" type="date" required>
+                </div>
+                <div class="money-field money-field--full">
+                    <label for="lend-description">Description</label>
+                    <textarea id="lend-description" name="description" rows="3" placeholder="Add a note" maxlength="2000"></textarea>
+                </div>
+                <label class="money-alert-setting">
+                    <input type="checkbox" name="alerts" checked>
+                    <span><strong>Enable alerts</strong><small>Remind me when repayment is due.</small></span>
+                </label>
+                <p class="money-form__error" data-money-form-error role="alert" hidden></p>
+                <div class="money-form__actions">
+                    <button type="button" class="money-button money-button--secondary" data-close-money>Cancel</button>
+                    <button type="submit" class="money-button">Create lend</button>
+                </div>
+            </form>
+        </section>
+    </dialog>
+
+    <dialog class="money-dialog money-delete-dialog" data-money-delete-dialog
+            aria-labelledby="lend-delete-title" aria-describedby="lend-delete-description">
+        <section class="money-create">
+            <div class="money-dialog__heading">
+                <h2 id="lend-delete-title">Delete lend</h2>
+                <button type="button" class="money-dialog__close" data-close-money-delete
+                        aria-label="Close delete lend">&times;</button>
+            </div>
+            <p id="lend-delete-description"><strong data-money-delete-name>This lend</strong>
+                will be permanently deleted and cannot be restored.</p>
+            <form class="money-delete-dialog__form" data-money-delete-form>
+                <p class="money-form__error" data-money-delete-error role="alert" hidden></p>
+                <div class="money-form__actions">
+                    <button type="button" class="money-button money-button--secondary"
+                            data-close-money-delete autofocus>Cancel</button>
+                    <button type="submit" class="money-button money-button--danger">Confirm delete</button>
+                </div>
+            </form>
+        </section>
+    </dialog>
+</section>

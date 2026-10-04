@@ -1,0 +1,6 @@
+/* Shared containers and forms are styled in components/money.css. */
+.budget-page {
+    --money-accent: #0f9d92;
+    --money-action: #087a72;
+    --money-tint: #e0f7f1;
+}

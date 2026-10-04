@@ -1,0 +1,145 @@
+<section class="money-page debt-page" aria-labelledby="debt-title">
+    <div class="money-heading">
+        <div>
+            <h1 id="debt-title" tabindex="-1">Debt repayments</h1>
+        </div>
+        <button type="button" class="money-button" data-open-money-dialog>+ New debt</button>
+    </div>
+    <div class="money-summary">
+        <div class="money-stat"><span>Total debts</span><strong>—</strong></div>
+        <div class="money-stat"><span>Original amounts</span><strong>—</strong></div>
+        <div class="money-stat"><span>Total paid</span><strong>—</strong></div>
+        <div class="money-stat money-stat--remaining"><span>Still owed</span><strong>—</strong></div>
+    </div>
+    <section class="money-allocation" aria-labelledby="debt-allocation-title">
+        <div class="money-section-heading">
+            <h2 id="debt-allocation-title">How your debt is divided</h2>
+            <span>Original amounts</span>
+        </div>
+        <div class="money-allocation__bar" role="img" aria-label="Allocation unavailable"></div>
+        <ul class="money-allocation__legend"></ul>
+    </section>
+    <div class="money-grid"></div>
+
+    <template data-money-card-template>
+        <article class="money-card">
+            <div class="money-card__heading">
+                <h2></h2>
+                <div class="money-card__actions">
+                    <button type="button" class="money-card__favorite" aria-label="Toggle favorite" aria-pressed="false">
+                        <span aria-hidden="true"></span>
+                    </button>
+                    <div class="money-card__menu">
+                        <button type="button" data-money-menu-toggle
+                                aria-label="Debt actions" aria-expanded="false">&#8943;</button>
+                        <div class="money-card__menu-panel" data-money-menu
+                             role="group" aria-label="Debt actions" hidden>
+                            <button type="button" data-money-action="edit">Edit</button>
+                            <button type="button" class="money-card__menu-danger"
+                                    data-money-action="delete">Delete</button>
+                            <button type="button" data-money-action="notifications"
+                                    role="switch" aria-checked="false">
+                                <span>Notifications</span>
+                                <span class="money-card__notification-status">
+                                    <span data-money-notification-state aria-hidden="true">Off</span>
+                                    <span class="money-card__notification-toggle" aria-hidden="true"></span>
+                                </span>
+                            </button>
+                            <p class="money-menu-error" data-money-menu-error role="alert" hidden></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="money-card__person"></p>
+            <p class="money-card__description"></p>
+            <div class="money-card__limit">
+                <span>Original amount</span>
+                <strong></strong>
+            </div>
+            <div class="money-card__progress-label">
+                <span></span>
+                <strong></strong>
+            </div>
+            <progress max="1" value="0" aria-label="Debt paid"></progress>
+            <p class="money-card__remaining"><strong></strong></p>
+            <div class="money-card__footer">
+                <span></span>
+                <span class="money-alert"></span>
+            </div>
+        </article>
+    </template>
+
+    <dialog class="money-dialog" data-money-form-dialog aria-labelledby="debt-dialog-title">
+        <section class="money-create">
+            <div class="money-dialog__heading">
+                <h2 id="debt-dialog-title" data-money-form-title>New debt</h2>
+                <button type="button" class="money-dialog__close" data-close-money aria-label="Close new debt">&times;</button>
+            </div>
+            <p data-money-form-description>Record the balance, who you owe, and your repayment details.</p>
+            <form class="money-form" data-money-form>
+                <div class="money-field money-field--full">
+                    <label for="debt-name">Debt name</label>
+                    <input id="debt-name" name="name" type="text" placeholder="e.g. Car finance" required autofocus maxlength="80">
+                </div>
+                <div class="money-field money-field--full">
+                    <label for="debt-creditor">Creditor / person owed</label>
+                    <input id="debt-creditor" name="creditor" type="text" placeholder="Who do you owe?" required>
+                </div>
+                <div class="money-field">
+                    <label for="debt-amount">Original amount owed</label>
+                    <input id="debt-amount" name="amount" type="number" placeholder="0.00" min="0.01" step="0.01" required>
+                </div>
+                <div class="money-field">
+                    <label for="debt-paid">Amount already paid</label>
+                    <input id="debt-paid" name="paid" type="number" placeholder="0.00" min="0" step="0.01" required>
+                </div>
+                <div class="money-field">
+                    <label for="debt-payment">Planned payment amount (optional)</label>
+                    <input id="debt-payment" name="payment" type="number" placeholder="0.00" min="0" step="0.01">
+                </div>
+                <div class="money-field">
+                    <label for="debt-start">Starting date</label>
+                    <input id="debt-start" name="start" type="date" required>
+                </div>
+                <div class="money-field">
+                    <label for="debt-due">Next payment due date</label>
+                    <input id="debt-due" name="due" type="date" required>
+                </div>
+                <div class="money-field money-field--full">
+                    <label for="debt-description">Description</label>
+                    <textarea id="debt-description" name="description" rows="3" placeholder="Add a note" maxlength="2000"></textarea>
+                </div>
+                <label class="money-alert-setting">
+                    <input type="checkbox" name="alerts" checked>
+                    <span><strong>Enable alerts</strong><small>Remind me before a payment is due.</small></span>
+                </label>
+                <p class="money-form__error" data-money-form-error role="alert" hidden></p>
+                <div class="money-form__actions">
+                    <button type="button" class="money-button money-button--secondary" data-close-money>Cancel</button>
+                    <button type="submit" class="money-button">Create debt</button>
+                </div>
+            </form>
+        </section>
+    </dialog>
+
+    <dialog class="money-dialog money-delete-dialog" data-money-delete-dialog
+            aria-labelledby="debt-delete-title" aria-describedby="debt-delete-description">
+        <section class="money-create">
+            <div class="money-dialog__heading">
+                <h2 id="debt-delete-title">Delete debt</h2>
+                <button type="button" class="money-dialog__close" data-close-money-delete
+                        aria-label="Close delete debt">&times;</button>
+            </div>
+            <p id="debt-delete-description"><strong data-money-delete-name>This debt</strong>
+                will be permanently deleted and cannot be restored.</p>
+            <form class="money-delete-dialog__form" data-money-delete-form>
+                <p class="money-form__error" data-money-delete-error role="alert" hidden></p>
+                <div class="money-form__actions">
+                    <button type="button" class="money-button money-button--secondary"
+                            data-close-money-delete autofocus>Cancel</button>
+                    <button type="submit" class="money-button money-button--danger">Confirm delete</button>
+                </div>
+            </form>
+        </section>
+    </dialog>
+</section>

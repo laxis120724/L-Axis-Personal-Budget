@@ -1,0 +1,35 @@
+<section class="dashboard" aria-labelledby="dashboard-title">
+    <div class="dashboard-heading">
+        <h1 id="dashboard-title" tabindex="-1">Dashboard</h1>
+        <label class="dashboard-picker" for="dashboard-wallet">
+            <span>Wallet</span>
+            <select id="dashboard-wallet" data-dashboard-wallet>
+                <option value="overall">Overall wallets</option>
+                <option value="personal">My Money</option>
+            </select>
+        </label>
+    </div>
+    <div class="dashboard-context">
+        <span class="dashboard-scope" data-dashboard-scope>Overall wallets</span>
+        <span data-dashboard-period></span>
+    </div>
+    <p class="dashboard-status" data-dashboard-status role="status">Loading your wallets…</p>
+    <div class="dashboard-main" data-dashboard-main aria-label="Current money and savings"></div>
+    <div class="dashboard-stats" data-dashboard-stats aria-label="Expenses and commitments"></div>
+    <div class="dashboard-section-heading">
+        <h2>Your money in charts</h2>
+        <span data-dashboard-chart-scope></span>
+    </div>
+    <div class="dashboard-charts" data-dashboard-charts></div>
+    <div class="dashboard-bottom">
+        <section class="dashboard-panel" aria-labelledby="dashboard-wallets-title">
+            <div class="dashboard-section-heading"><h2 id="dashboard-wallets-title">Wallet balances</h2></div>
+            <p class="dashboard-caption">Recorded cash flow · shared balances belong to the whole group.</p>
+            <div data-dashboard-balances></div>
+        </section>
+        <section class="dashboard-panel" aria-labelledby="dashboard-recent-title">
+            <div class="dashboard-section-heading"><h2 id="dashboard-recent-title">Recent transactions</h2></div>
+            <div data-dashboard-recent></div>
+        </section>
+    </div>
+</section>

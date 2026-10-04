@@ -1,0 +1,416 @@
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --color-background: #111821;
+    --color-surface: #1b2532;
+    --color-text: #e8edf5;
+    --color-muted: #a8b5c7;
+    --color-primary: #8cdbb2;
+    --brand-primary: #24774f;
+    --brand-tint: #203f32;
+    --color-border: #354354;
+    --money-border: #354354;
+    --glass-surface: rgb(27 37 50 / 92%);
+    --glass-border: #354354;
+    --glass-shadow: 0 12px 32px rgb(0 0 0 / 16%);
+    --money-shadow: 0 5px 18px rgb(0 0 0 / 15%);
+}
+
+:root[data-theme="dark"] :is(
+    .header__account-menu,
+    .invitations-panel,
+    .calendar-panel,
+    .calendar-arrow,
+    .calendar-button,
+    .calendar-close,
+    .calendar-day,
+    .calendar-detail-card,
+    .shared-wallet-toolbar,
+    .transaction-allocation,
+    .transaction-stat,
+    .transaction-filters,
+    .dashboard-status,
+    .dashboard-donut__center,
+    .overview-donut__center,
+    .money-card__menu-panel,
+    .shared-wallet-category-choice
+) {
+    background: var(--color-surface);
+    color: var(--color-text);
+    border-color: var(--color-border);
+}
+
+:root[data-theme="dark"] :is(
+    .budget-card__limit,
+    .money-card__limit,
+    .budget-allocation__legend li,
+    .money-allocation__legend li,
+    .overview-preview li,
+    .overview-stat__icon,
+    .overview-count,
+    .overview-filter,
+    .overview-category__count,
+    .budget-alert-setting,
+    .money-alert-setting,
+    .dashboard-stat__icon,
+    .dashboard-recent__icon,
+    .notifications-view-all,
+    .calendar-view-all,
+    .shared-wallet-member-role,
+    .shared-wallet-role-badge,
+    .shared-wallet-member-control,
+    .shared-wallet-remove,
+    .shared-wallet-category-access,
+    .transaction-row-actions button,
+    .transaction-type,
+    .calendar-detail-card__status,
+    .calendar-day__entry
+) {
+    background: #253344;
+    color: var(--color-text);
+    border-color: var(--color-border);
+}
+
+:root[data-theme="dark"] :is(input, select, textarea) {
+    background-color: #15202c;
+    color: var(--color-text);
+    border-color: var(--color-border);
+}
+
+:root[data-theme="dark"] .settings-toggle input {
+    background: #56665c;
+    border-color: #66786d;
+}
+
+:root[data-theme="dark"] .settings-toggle input:checked {
+    background: var(--brand-primary);
+    border-color: var(--brand-primary);
+}
+
+:root[data-theme="dark"] option {
+    background: #15202c;
+    color: var(--color-text);
+}
+
+:root[data-theme="dark"] :is(
+    .money-button--secondary,
+    .budget-button--secondary,
+    .calendar-button,
+    .calendar-arrow,
+    .calendar-close,
+    .notifications-read-all,
+    .header__account-menu button
+) {
+    background: #253344;
+    color: var(--color-text);
+    border-color: var(--color-border);
+}
+
+:root[data-theme="dark"] :is(
+    .transaction-table th,
+    .shared-wallet-member-email,
+    .shared-wallet-member-status,
+    .shared-wallet-form-note,
+    .shared-wallet-permissions,
+    .calendar-detail-fields dt,
+    .header__account-menu span
+) {
+    color: var(--color-muted);
+}
+
+:root[data-theme="dark"] :is(.transaction-table td, .shared-wallet-activity li) {
+    border-color: var(--color-border);
+}
+
+:root[data-theme="dark"] :is(.transaction-table thead, .calendar-weekdays) {
+    background: #15202c;
+}
+
+:root[data-theme="dark"] :is(
+    .dashboard-current .dashboard-stat__heading h2,
+    .dashboard-savings .dashboard-stat__heading h2,
+    .dashboard-savings__detail,
+    .dashboard-wallet-value
+) {
+    color: #a4dbbb;
+}
+
+:root[data-theme="dark"] :is(.calendar-day:hover, .calendar-due-preview:hover, .money-card__menu-panel button:hover) {
+    background: #293c4c;
+}
+
+:root[data-theme="dark"] .header__icon-button img {
+    filter: invert(1) brightness(1.7);
+}
+
+:root[data-theme="dark"] .calendar-day[data-outside="true"] {
+    background: transparent;
+    color: #91a0b4;
+}
+
+:root[data-theme="dark"] .dashboard-line text {
+    fill: var(--color-muted);
+}
+
+:root[data-theme="dark"] ::backdrop {
+    background: rgb(0 0 0 / 60%);
+}
+
+:root[data-theme="dark"] .notification-card {
+    background: #193b35;
+    border-color: #366e60;
+}
+
+:root[data-theme="dark"] .notification-card[data-read="true"] {
+    background: #253344;
+    border-color: var(--color-border);
+    color: var(--color-muted);
+}
+
+:root[data-theme="dark"] .shared-wallet-card {
+    background: var(--color-surface);
+    color: var(--color-text);
+    border-color: var(--color-border);
+}
+
+/* The account screen keeps its light form even when a saved app theme is dark. */
+:root[data-theme="dark"] .auth-page input {
+    background: #ffffff;
+    color: var(--auth-ink);
+    border-color: var(--auth-border);
+}
+
+:root[data-theme="dark"] .transaction-table tbody tr:hover td {
+    background: #253344;
+}
+
+/* Use brighter foreground colors; keep colored fills and chart segments distinct. */
+:root[data-theme="dark"] :is(
+    .dashboard,
+    .money-overview,
+    .budget-page,
+    .money-page,
+    .transaction-page,
+    .shared-wallet-page
+) {
+    --color-primary: #8cdbb2;
+}
+
+:root[data-theme="dark"] :is(.money-button, .budget-button):not(.money-button--secondary):not(.budget-button--secondary):not(.money-button--danger) {
+    background: var(--brand-primary);
+    color: #ffffff;
+}
+
+:root[data-theme="dark"] .dashboard-stat__value,
+:root[data-theme="dark"] .dashboard-stat__icon {
+    color: color-mix(in srgb, var(--stat-color) 65%, white);
+}
+
+:root[data-theme="dark"] :is(
+    .overview-stat strong,
+    .overview-stat__icon,
+    .overview-category__total strong,
+    .overview-category__link
+) {
+    color: color-mix(in srgb, var(--category-color, var(--color-text)) 65%, white);
+}
+
+:root[data-theme="dark"] .overview-donut__center strong {
+    color: var(--color-text);
+}
+
+:root[data-theme="dark"] .overview-donut {
+    box-shadow: 0 0 0 7px #253344;
+}
+
+:root[data-theme="dark"] .dashboard-line__grid {
+    stroke: var(--color-border);
+}
+
+:root[data-theme="dark"] .dashboard-line circle {
+    stroke: var(--color-surface);
+}
+
+:root[data-theme="dark"] :is(.dashboard-stack, .dashboard-variance-track, .transaction-allocation__bar) {
+    background: #253344;
+}
+
+:root[data-theme="dark"] .dashboard-stack__remaining {
+    background: #50645d;
+}
+
+:root[data-theme="dark"] :is(.dashboard-progress, .money-overview progress) {
+    background: #344636;
+}
+
+:root[data-theme="dark"] .dashboard-progress::-webkit-progress-bar,
+:root[data-theme="dark"] .money-overview progress::-webkit-progress-bar {
+    background: #344636;
+}
+
+:root[data-theme="dark"] .transaction-allocation__bar > span {
+    border-color: var(--color-surface);
+}
+
+:root[data-theme="dark"] :is(
+    .transaction-stat--income strong,
+    .transaction-amount--income,
+    .overview-transaction__amount[data-direction="in"] strong,
+    .dashboard-row-amount strong[data-direction="in"],
+    .dashboard-recent__icon[data-direction="in"],
+    .calendar-detail-link,
+    .calendar-day__count
+) {
+    color: #8cdbb2;
+}
+
+:root[data-theme="dark"] :is(
+    .transaction-stat--outgoing strong,
+    .transaction-amount--outgoing,
+    .overview-transaction__amount[data-direction="out"] strong,
+    .dashboard-row-amount strong[data-direction="out"],
+    .dashboard-current[data-negative="true"] .dashboard-stat__value,
+    .dashboard-wallet-value[data-negative="true"]
+) {
+    color: #ffa58f;
+}
+
+:root[data-theme="dark"] .transaction-stat--net strong {
+    color: #c5b0ff;
+}
+
+:root[data-theme="dark"] .transaction-stat--budget strong {
+    color: #9ccfff;
+}
+
+:root[data-theme="dark"] :is(
+    .calendar-summary strong,
+    .notifications-read-all,
+    .notification-read,
+    .notification-card__state
+) {
+    color: #8cdbb2;
+}
+
+:root[data-theme="dark"] :is(
+    .budget-card__favorite,
+    .money-card__favorite,
+    .overview-preview__star
+)[aria-pressed="true"] {
+    background: #493d23;
+    color: #f2cc73;
+}
+
+:root[data-theme="dark"] :is(.budget-alert, .money-alert) {
+    background: #193b35;
+    color: #8cdbb2;
+}
+
+:root[data-theme="dark"] :is(.budget-alert--off, .money-alert--off) {
+    background: #253344;
+    color: var(--color-muted);
+}
+
+:root[data-theme="dark"] :is(.budget-alert--warning, .money-alert--warning) {
+    background: #493d23;
+    color: #f2cc73;
+}
+
+:root[data-theme="dark"] .subscription-card__status {
+    color: #8cdbb2;
+}
+
+:root[data-theme="dark"] .overview-transaction__icon {
+    background: #253344;
+    color: color-mix(in srgb, var(--transaction-color) 65%, white);
+}
+
+/* Table cells and their scrolling viewport have separate light-mode fills. */
+:root[data-theme="dark"] .transaction-table__viewport {
+    background: #15202c;
+    border-color: var(--color-border);
+    scrollbar-color: #56667a transparent;
+}
+
+:root[data-theme="dark"] .transaction-table th {
+    background: #253344;
+}
+
+:root[data-theme="dark"] :is(.transaction-page-size, .transaction-page-button) {
+    background: #253344;
+    color: var(--color-muted);
+    border-color: var(--color-border);
+}
+
+:root[data-theme="dark"] .transaction-page-button:disabled {
+    opacity: 1;
+    color: #7c8b9e;
+    background: #1b2532;
+}
+
+:root[data-theme="dark"] .transaction-page-button:hover:not(:disabled),
+:root[data-theme="dark"] .transaction-table [data-transaction-action]:hover {
+    background: #31445a;
+    color: var(--color-text);
+}
+
+:root[data-theme="dark"] .transaction-table [data-transaction-action="delete"] {
+    color: #ffa58f;
+}
+
+:root[data-theme="dark"] :is(.calendar-day-dialog, .calendar-detail-card__note) {
+    background: var(--color-surface);
+    color: var(--color-text);
+}
+
+:root[data-theme="dark"] .shared-wallet-remove img {
+    filter: brightness(1.9);
+}
+
+:root[data-theme="dark"] :is(.money-card__menu-danger, .shared-wallet-remove) {
+    color: #ffa58f;
+}
+
+:root[data-theme="dark"] select:not([multiple]):not([size]),
+:root[data-theme="dark"] select:not([multiple])[size="1"] {
+    background-image: url("../../assets/icons/menu-arrow-light.svg");
+}
+
+@media (forced-colors: active) {
+    :root[data-theme="dark"] select {
+        background-image: none !important;
+    }
+}
+
+/* Highlight individual navigation rows, keeping expanded groups transparent. */
+:root[data-theme="dark"] .sidebar a:hover,
+:root[data-theme="dark"] .sidebar__row:hover {
+    background: #253344;
+    color: var(--color-primary);
+}
+
+:root[data-theme="dark"] .sidebar a[aria-current="page"],
+:root[data-theme="dark"] .sidebar__row:has(> .sidebar__overview[aria-current="page"]) {
+    background: var(--brand-tint);
+    color: var(--color-primary);
+}
+
+:root[data-theme="dark"] .sidebar a[aria-current="page"] {
+    font-weight: 600;
+}
+
+:root[data-theme="dark"] .sidebar__row .sidebar__overview,
+:root[data-theme="dark"] .sidebar__row .sidebar__overview:is(:hover, [aria-current="page"]),
+:root[data-theme="dark"] .sidebar__row .sidebar__toggle {
+    background: transparent;
+}
+
+:root[data-theme="dark"] .sidebar__row:has(> .sidebar__overview[aria-current="page"]) .sidebar__toggle,
+:root[data-theme="dark"] .sidebar__group:has(.sidebar__submenu a[aria-current="page"]) .sidebar__overview {
+    color: var(--color-primary);
+}
+
+:root[data-theme="dark"] .sidebar__submenu {
+    margin: 8px 0 4px 12px;
+    padding: 0 0 0 8px;
+    border-left: 1px solid var(--color-border);
+}

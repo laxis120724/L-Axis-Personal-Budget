@@ -1,0 +1,22 @@
+/* Use the sidebar's ▾ arrow for every single-choice dropdown, including
+   controls created later in dialogs and shared-wallet member lists. */
+select:not([multiple]):not([size]),
+select:not([multiple])[size="1"] {
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("../../assets/icons/menu-arrow.svg");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px 16px;
+    padding-inline-end: 38px;
+}
+
+/* Let the browser draw its accessible arrow in Windows high-contrast mode. */
+@media (forced-colors: active) {
+    select:not([multiple]):not([size]),
+    select:not([multiple])[size="1"] {
+        -webkit-appearance: auto;
+        appearance: auto;
+        background-image: none;
+    }
+}

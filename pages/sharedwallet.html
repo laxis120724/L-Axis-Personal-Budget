@@ -1,0 +1,131 @@
+<section class="money-page shared-wallet-page" aria-labelledby="shared-wallet-title">
+    <div class="shared-wallet-toolbar" aria-label="Shared wallet controls">
+        <div class="shared-wallet-picker">
+            <label for="shared-wallet-select">Shared Wallet</label>
+            <select id="shared-wallet-select" data-shared-wallet-select disabled>
+                <option value="">No shared wallets yet</option>
+            </select>
+        </div>
+        <button class="money-button shared-wallet-add" type="button" data-shared-wallet-add>
+            <span aria-hidden="true">+</span>
+            Add Shared Wallet
+        </button>
+    </div>
+
+    <div class="money-heading shared-wallet-page-heading">
+        <h1 id="shared-wallet-title" data-shared-wallet-title tabindex="-1">Shared Wallet</h1>
+        <div class="shared-wallet-page-actions" data-shared-wallet-page-actions></div>
+    </div>
+    <p class="shared-wallet-message" data-shared-wallet-message role="status" hidden></p>
+    <p class="money-empty" data-shared-wallet-empty>Create a shared wallet to get started.</p>
+
+    <div class="shared-wallet-content" data-shared-wallet-content hidden>
+        <div class="shared-wallet-context" data-shared-wallet-context>
+            <section class="shared-wallet-card shared-wallet-summary" aria-labelledby="shared-wallet-name">
+                <div>
+                    <span class="shared-wallet-eyebrow">Shared wallet</span>
+                    <h2 id="shared-wallet-name" data-shared-wallet-name></h2>
+                </div>
+                <button class="money-button money-button--secondary" type="button" data-shared-wallet-rename hidden>Rename</button>
+            </section>
+
+            <div class="shared-wallet-stats" data-shared-wallet-overview>
+                <section class="shared-wallet-card shared-wallet-stat"><span>Your position</span><strong data-shared-wallet-role></strong></section>
+                <section class="shared-wallet-card shared-wallet-stat"><span>Active members</span><strong data-shared-wallet-member-count>—</strong></section>
+                <section class="shared-wallet-card shared-wallet-stat"><span>Joined</span><strong data-shared-wallet-created>—</strong></section>
+            </div>
+        </div>
+
+        <section class="shared-wallet-card shared-wallet-currency" data-shared-wallet-currency-panel hidden>
+            <div><span class="shared-wallet-eyebrow">Wallet currency</span><strong data-shared-wallet-currency>AED</strong><small class="settings-note">Fixed</small></div>
+            <label class="settings-check"><input type="checkbox" data-shared-wallet-converted> Show amounts in my currency too</label>
+        </section>
+        <section class="shared-wallet-card shared-wallet-section" data-shared-wallet-info hidden aria-labelledby="shared-wallet-members-title">
+            <div class="shared-wallet-section-heading">
+                <div><h2 id="shared-wallet-members-title">Members</h2></div>
+                <button type="button" class="money-button" data-shared-wallet-invite hidden>+ Add member</button>
+            </div>
+            <p class="shared-wallet-permissions" data-shared-wallet-permissions></p>
+            <p class="money-empty" data-shared-wallet-members-state>Loading members…</p>
+            <div class="shared-wallet-table-wrap" data-shared-wallet-members-table hidden>
+                <table class="shared-wallet-table">
+                    <caption class="shared-wallet-sr-only">Shared wallet members and positions</caption>
+                    <thead><tr><th scope="col">Member</th><th scope="col">Position</th><th scope="col">Access</th><th scope="col">Actions</th></tr></thead>
+                    <tbody data-shared-wallet-members></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="shared-wallet-card shared-wallet-section" data-shared-wallet-activity-section hidden aria-labelledby="shared-wallet-activity-title">
+            <div class="shared-wallet-section-heading"><div><h2 id="shared-wallet-activity-title">Wallet history</h2></div></div>
+            <p class="money-empty" data-shared-wallet-activity-state>Loading history…</p>
+            <ol class="shared-wallet-activity" data-shared-wallet-activity hidden></ol>
+        </section>
+
+        <div data-shared-overview-container hidden></div>
+        <div data-shared-money-container hidden></div>
+        <div data-shared-transaction-container hidden></div>
+    </div>
+
+    <dialog class="money-dialog shared-wallet-dialog" data-shared-wallet-create-dialog aria-labelledby="shared-wallet-create-title">
+        <section class="money-create">
+            <div class="money-dialog__heading"><h2 id="shared-wallet-create-title">Create Shared Wallet</h2><button type="button" class="money-dialog__close" data-shared-wallet-close aria-label="Close create shared wallet">&times;</button></div>
+            <p>Give your shared wallet a name. You will be its Creator.</p>
+            <form class="money-form" data-shared-wallet-create-form>
+                <div class="money-field money-field--full"><label for="shared-wallet-create-name">Wallet name</label><input id="shared-wallet-create-name" name="name" type="text" maxlength="80" required autofocus placeholder="e.g. Family plans"></div>
+                <div class="money-field money-field--full"><label for="shared-wallet-create-currency">Wallet currency</label><select id="shared-wallet-create-currency" name="currency" required><option value="AED">AED — UAE dirham</option><option value="PHP">PHP — Philippine peso</option><option value="USD">USD — US dollar</option><option value="EUR">EUR — Euro</option><option value="GBP">GBP — British pound</option></select><small class="settings-note">Fixed after creation.</small></div>
+                <label class="settings-check money-field--full"><input type="checkbox" name="showConverted"> Show amounts in my currency too</label>
+                <p class="money-form__error" data-shared-wallet-form-error role="alert" hidden></p>
+                <div class="money-form__actions"><button type="button" class="money-button money-button--secondary" data-shared-wallet-close>Cancel</button><button type="submit" class="money-button" data-shared-wallet-submit>Create wallet</button></div>
+            </form>
+        </section>
+    </dialog>
+
+    <dialog class="money-dialog shared-wallet-dialog" data-shared-wallet-rename-dialog aria-labelledby="shared-wallet-rename-title">
+        <section class="money-create">
+            <div class="money-dialog__heading"><h2 id="shared-wallet-rename-title">Rename wallet</h2><button type="button" class="money-dialog__close" data-shared-wallet-close aria-label="Close rename wallet">&times;</button></div>
+            <form class="money-form" data-shared-wallet-rename-form>
+                <div class="money-field money-field--full"><label for="shared-wallet-rename-name">Wallet name</label><input id="shared-wallet-rename-name" name="name" type="text" maxlength="80" required autofocus></div>
+                <p class="money-form__error" data-shared-wallet-form-error role="alert" hidden></p>
+                <div class="money-form__actions"><button type="button" class="money-button money-button--secondary" data-shared-wallet-close>Cancel</button><button type="submit" class="money-button" data-shared-wallet-submit>Rename</button></div>
+            </form>
+        </section>
+    </dialog>
+
+    <dialog class="money-dialog shared-wallet-dialog" data-shared-wallet-invite-dialog aria-labelledby="shared-wallet-invite-title">
+        <section class="money-create">
+            <div class="money-dialog__heading"><h2 id="shared-wallet-invite-title">Invite a member</h2><button type="button" class="money-dialog__close" data-shared-wallet-close aria-label="Close invite member">&times;</button></div>
+            <p>Invitations appear in their notifications after sign-in.</p>
+            <form class="money-form" data-shared-wallet-invite-form>
+                <div class="money-field money-field--full"><label for="shared-wallet-invite-email">Email address</label><input id="shared-wallet-invite-email" name="email" type="email" maxlength="254" required autofocus autocomplete="email"></div>
+                <div class="money-field money-field--full"><label for="shared-wallet-invite-role">Position</label><select id="shared-wallet-invite-role" name="role"><option value="member">Member</option><option value="admin">Admin</option></select></div>
+                <p class="shared-wallet-form-note">Admins manage the wallet and members. Members can record their own income/contributions and manage their own transactions within assigned categories.</p>
+                <p class="money-form__error" data-shared-wallet-form-error role="alert" hidden></p>
+                <div class="money-form__actions"><button type="button" class="money-button money-button--secondary" data-shared-wallet-close>Cancel</button><button type="submit" class="money-button" data-shared-wallet-submit>Send invitation</button></div>
+            </form>
+        </section>
+    </dialog>
+
+    <dialog class="money-dialog shared-wallet-dialog" data-shared-wallet-remove-dialog aria-labelledby="shared-wallet-remove-title">
+        <section class="money-create">
+            <div class="money-dialog__heading"><h2 id="shared-wallet-remove-title">Remove member</h2><button type="button" class="money-dialog__close" data-shared-wallet-close aria-label="Close remove member">&times;</button></div>
+            <p><strong data-shared-wallet-remove-name></strong> will lose access to this wallet. Their recorded history will remain.</p>
+            <form class="money-form" data-shared-wallet-remove-form>
+                <p class="money-form__error" data-shared-wallet-form-error role="alert" hidden></p>
+                <div class="money-form__actions"><button type="button" class="money-button money-button--secondary" data-shared-wallet-close autofocus>Cancel</button><button type="submit" class="money-button money-button--danger" data-shared-wallet-submit>Remove member</button></div>
+            </form>
+        </section>
+    </dialog>
+
+    <dialog class="money-dialog shared-wallet-dialog" data-shared-wallet-access-dialog aria-labelledby="shared-wallet-access-title">
+        <section class="money-create">
+            <div class="money-dialog__heading"><h2 id="shared-wallet-access-title">Assign categories</h2><button type="button" class="money-dialog__close" data-shared-wallet-close aria-label="Close category access">&times;</button></div>
+            <p>Select the categories <strong data-shared-wallet-access-name></strong> can use for their own transactions. General income/contributions do not need an assigned category.</p>
+            <form class="money-form" data-shared-wallet-access-form>
+                <fieldset class="shared-wallet-category-access"><legend>Allowed categories</legend><div data-shared-wallet-category-options></div></fieldset>
+                <p class="money-form__error" data-shared-wallet-form-error role="alert" hidden></p>
+                <div class="money-form__actions"><button type="button" class="money-button money-button--secondary" data-shared-wallet-close>Cancel</button><button type="submit" class="money-button" data-shared-wallet-submit>Save access</button></div>
+            </form>
+        </section>
+    </dialog>
+</section>

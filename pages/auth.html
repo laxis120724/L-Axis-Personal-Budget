@@ -1,0 +1,84 @@
+<section class="auth-page" aria-label="L-Axis account">
+    <aside class="auth-story" aria-label="Welcome to L-Axis">
+        <div class="auth-story__content">
+            <h2 class="auth-story__brand">L-Axis</h2>
+            <p class="auth-story__tagline">Keep track of what you spend, plan your budget, and reach your money goals</p>
+        </div>
+    </aside>
+
+    <div class="auth-entry">
+        <div class="auth-entry__body">
+            <div class="auth-switch" role="group" aria-label="Choose account action">
+                <button type="button" class="auth-switch__button" data-auth-mode="login" aria-pressed="true">Log in</button>
+                <button type="button" class="auth-switch__button" data-auth-mode="register" aria-pressed="false">Register</button>
+            </div>
+
+            <div class="auth-heading">
+                <h1 data-auth-title>Welcome back.</h1>
+                <p data-auth-intro>Log in to your account.</p>
+            </div>
+
+            <form class="auth-form" data-auth-form>
+                <div class="auth-field" data-auth-name-field hidden>
+                    <label for="auth-name">Full name</label>
+                    <input id="auth-name" name="name" type="text" autocomplete="name" maxlength="80" placeholder="Your full name">
+                </div>
+
+                <div class="auth-field">
+                    <label for="auth-email">Email address</label>
+                    <input id="auth-email" name="email" type="email" autocomplete="username" required maxlength="254" placeholder="you@example.com">
+                </div>
+
+                <div class="auth-field">
+                    <label for="auth-password">Password</label>
+                    <div class="auth-password">
+                        <input id="auth-password" name="password" type="password" autocomplete="current-password" required placeholder="Enter your password">
+                        <button class="auth-password__toggle" type="button" data-auth-password-toggle data-auth-password-target="password" aria-label="Show password" aria-pressed="false" title="Show password">
+                            <img data-auth-eye="show" src="assets/icons/auth-eye.svg" alt="">
+                            <img data-auth-eye="hide" src="assets/icons/auth-eye-off.svg" alt="" hidden>
+                        </button>
+                    </div>
+                    <button class="auth-forgot" type="button" data-auth-forgot>Forgot password?</button>
+                </div>
+
+                <div class="auth-field" data-auth-confirm-field hidden>
+                    <label for="auth-confirm-password">Confirm password</label>
+                    <div class="auth-password">
+                        <input id="auth-confirm-password" name="confirmPassword" type="password" autocomplete="new-password" placeholder="Enter your password again">
+                        <button class="auth-password__toggle" type="button" data-auth-password-toggle data-auth-password-target="confirmPassword" aria-label="Show confirm password" aria-pressed="false" title="Show confirm password">
+                            <img data-auth-eye="show" src="assets/icons/auth-eye.svg" alt="">
+                            <img data-auth-eye="hide" src="assets/icons/auth-eye-off.svg" alt="" hidden>
+                        </button>
+                    </div>
+                </div>
+
+                <p class="auth-message" data-auth-message role="status" hidden></p>
+                <button class="auth-primary" type="submit" data-auth-submit>Log in</button>
+            </form>
+
+            <div class="auth-divider"><span>or continue with</span></div>
+            <button class="auth-google" type="button" data-auth-google>
+                <img class="auth-google__icon" src="assets/icons/auth-google.svg" alt="">
+                <span data-auth-google-label>Sign in with Google</span>
+            </button>
+
+        </div>
+    </div>
+
+    <dialog class="auth-reset" data-auth-reset-dialog aria-labelledby="auth-reset-title" aria-describedby="auth-reset-description">
+        <div class="auth-reset__heading">
+            <h2 id="auth-reset-title">Reset your password</h2>
+            <button class="auth-reset__close" type="button" data-auth-reset-close aria-label="Close password reset">&times;</button>
+        </div>
+        <p id="auth-reset-description">Enter your account email and we&rsquo;ll send you a link to choose a new password.</p>
+        <form class="auth-form" data-auth-reset-form>
+            <div class="auth-field">
+                <label for="auth-reset-email">Email address</label>
+                <input id="auth-reset-email" name="email" type="email" autocomplete="email" required maxlength="254" placeholder="you@example.com">
+            </div>
+            <p class="auth-message" data-auth-reset-message role="status" hidden></p>
+            <button class="auth-primary" type="submit" data-auth-reset-submit>Send reset link</button>
+            <button class="auth-reset__cancel" type="button" data-auth-reset-close>Back to log in</button>
+        </form>
+    </dialog>
+</section>

@@ -1,0 +1,153 @@
+<section class="money-page subscriptions-page" aria-labelledby="subscriptions-title">
+    <div class="money-heading">
+        <div>
+            <h1 id="subscriptions-title" tabindex="-1">Subscriptions</h1>
+        </div>
+        <button type="button" class="money-button" data-open-money-dialog>+ New subscription</button>
+    </div>
+
+    <div class="money-summary">
+        <div class="money-stat"><span>Active subscriptions</span><strong>—</strong></div>
+        <div class="money-stat"><span>Estimated monthly cost</span><strong>—</strong></div>
+        <div class="money-stat"><span>Estimated yearly cost</span><strong>—</strong></div>
+        <div class="money-stat subscription-stat--next"><span>Next payment</span><strong>—</strong></div>
+    </div>
+
+    <section class="money-allocation" aria-labelledby="subscriptions-allocation-title">
+        <div class="money-section-heading">
+            <h2 id="subscriptions-allocation-title">Where your recurring costs go</h2>
+            <span>Monthly equivalent</span>
+        </div>
+        <p class="subscriptions-page__hint">Yearly plans are divided by 12 to compare monthly costs.</p>
+        <div class="money-allocation__bar" role="img" aria-label="Allocation unavailable"></div>
+        <ul class="money-allocation__legend"></ul>
+    </section>
+
+    <div class="money-grid"></div>
+
+    <template data-money-card-template>
+        <article class="money-card subscription-card">
+            <div class="money-card__heading">
+                <h2></h2>
+                <div class="money-card__actions">
+                    <button type="button" class="money-card__favorite" aria-label="Toggle favorite" aria-pressed="false">
+                        <span aria-hidden="true"></span>
+                    </button>
+                    <div class="money-card__menu">
+                        <button type="button" data-money-menu-toggle
+                                aria-label="Subscription actions" aria-expanded="false">&#8943;</button>
+                        <div class="money-card__menu-panel" data-money-menu
+                             role="group" aria-label="Subscription actions" hidden>
+                            <button type="button" data-money-action="edit">Edit</button>
+                            <button type="button" class="money-card__menu-danger"
+                                    data-money-action="delete">Delete</button>
+                            <button type="button" data-money-action="notifications"
+                                    role="switch" aria-checked="false">
+                                <span>Notifications</span>
+                                <span class="money-card__notification-status">
+                                    <span data-money-notification-state aria-hidden="true">Off</span>
+                                    <span class="money-card__notification-toggle" aria-hidden="true"></span>
+                                </span>
+                            </button>
+                            <p class="money-menu-error" data-money-menu-error role="alert" hidden></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="money-card__person"></p>
+            <p class="money-card__description"></p>
+            <div class="money-card__limit">
+                <span>Recurring cost</span>
+                <div class="subscription-card__price"><strong></strong><span></span></div>
+            </div>
+            <dl class="subscription-card__details">
+                <div><dt>Next payment</dt><dd></dd></div>
+                <div><dt>Monthly equivalent</dt><dd></dd></div>
+                <div><dt>Renewal</dt><dd></dd></div>
+            </dl>
+            <div class="money-card__footer">
+                <span class="subscription-card__status"></span>
+                <span class="money-alert"></span>
+            </div>
+        </article>
+    </template>
+
+    <dialog class="money-dialog" data-money-form-dialog aria-labelledby="subscriptions-dialog-title">
+        <section class="money-create">
+            <div class="money-dialog__heading">
+                <h2 id="subscriptions-dialog-title" data-money-form-title>New subscription</h2>
+                <button type="button" class="money-dialog__close" data-close-money aria-label="Close new subscription">&times;</button>
+            </div>
+            <p data-money-form-description>Add a service, its recurring cost, and your next payment date.</p>
+            <form class="money-form" data-money-form>
+                <div class="money-field money-field--full">
+                    <label for="subscription-name">Subscription name</label>
+                    <input id="subscription-name" name="name" type="text" placeholder="e.g. Music subscription" required autofocus maxlength="80">
+                </div>
+                <div class="money-field">
+                    <label for="subscription-amount">Amount per payment</label>
+                    <input id="subscription-amount" name="amount" type="number" min="0.01" step="0.01" placeholder="0.00" required>
+                </div>
+                <div class="money-field">
+                    <label for="subscription-cycle">Billing cycle</label>
+                    <select id="subscription-cycle" name="cycle">
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly" selected>Monthly</option>
+                        <option value="quarterly">Every 3 months</option>
+                        <option value="yearly">Yearly</option>
+                    </select>
+                </div>
+                <div class="money-field">
+                    <label for="subscription-start">Starting date</label>
+                    <input id="subscription-start" name="startDate" type="date" required>
+                </div>
+                <div class="money-field">
+                    <label for="subscription-next">Next payment date</label>
+                    <input id="subscription-next" name="nextPaymentDate" type="date" required>
+                </div>
+                <div class="money-field money-field--full">
+                    <label for="subscription-category">Category (optional)</label>
+                    <input id="subscription-category" name="category" type="text" placeholder="e.g. Entertainment, storage, or work">
+                </div>
+                <div class="money-field money-field--full">
+                    <label for="subscription-description">Description</label>
+                    <textarea id="subscription-description" name="description" rows="3" placeholder="Add a note about this subscription" maxlength="2000"></textarea>
+                </div>
+                <label class="money-alert-setting">
+                    <input type="checkbox" name="autoRenew" checked>
+                    <span><strong>Automatically renews</strong><small>This service renews automatically each billing cycle.</small></span>
+                </label>
+                <label class="money-alert-setting">
+                    <input type="checkbox" name="alerts" checked>
+                    <span><strong>Enable alerts</strong><small>Remind me before the next payment or renewal.</small></span>
+                </label>
+                <p class="money-form__error" data-money-form-error role="alert" hidden></p>
+                <div class="money-form__actions">
+                    <button type="button" class="money-button money-button--secondary" data-close-money>Cancel</button>
+                    <button type="submit" class="money-button">Create subscription</button>
+                </div>
+            </form>
+        </section>
+    </dialog>
+
+    <dialog class="money-dialog money-delete-dialog" data-money-delete-dialog
+            aria-labelledby="subscriptions-delete-title" aria-describedby="subscriptions-delete-description">
+        <section class="money-create">
+            <div class="money-dialog__heading">
+                <h2 id="subscriptions-delete-title">Delete subscription</h2>
+                <button type="button" class="money-dialog__close" data-close-money-delete
+                        aria-label="Close delete subscription">&times;</button>
+            </div>
+            <p id="subscriptions-delete-description"><strong data-money-delete-name>This subscription</strong>
+                will be permanently deleted and cannot be restored.</p>
+            <form class="money-delete-dialog__form" data-money-delete-form>
+                <p class="money-form__error" data-money-delete-error role="alert" hidden></p>
+                <div class="money-form__actions">
+                    <button type="button" class="money-button money-button--secondary"
+                            data-close-money-delete autofocus>Cancel</button>
+                    <button type="submit" class="money-button money-button--danger">Confirm delete</button>
+                </div>
+            </form>
+        </section>
+    </dialog>
+</section>

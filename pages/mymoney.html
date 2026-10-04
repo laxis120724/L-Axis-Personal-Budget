@@ -1,0 +1,46 @@
+<section class="money-overview" data-money-overview aria-labelledby="mymoney-title">
+    <div class="overview-heading">
+        <div>
+            <h1 id="mymoney-title" tabindex="-1">My Money</h1>
+        </div>
+        <span class="overview-count" data-overview-count>—</span>
+    </div>
+
+    <p class="overview-status money-empty" data-overview-status role="status">Loading your overview…</p>
+    <section aria-labelledby="overview-month-title">
+        <div class="overview-section-heading overview-section-heading--row">
+            <h2 id="overview-month-title">This month</h2>
+            <span class="overview-period" data-overview-month></span>
+        </div>
+        <p class="overview-status money-empty" data-overview-transaction-status role="status">Loading transactions…</p>
+        <div class="overview-summary" data-overview-summary aria-label="Monthly transaction summary"></div>
+    </section>
+
+    <section aria-labelledby="overview-charts-title">
+        <div class="overview-section-heading">
+            <h2 id="overview-charts-title">Money activity</h2>
+        </div>
+        <div class="overview-charts" data-overview-charts></div>
+    </section>
+
+    <section class="overview-activity" aria-labelledby="overview-recent-title">
+        <div class="overview-section-heading overview-section-heading--row">
+            <h2 id="overview-recent-title">Recent transactions</h2>
+            <a class="overview-activity__link" href="#transaction">View all →</a>
+        </div>
+        <div data-overview-recent></div>
+    </section>
+
+    <section aria-labelledby="overview-categories-title">
+        <div class="overview-section-heading overview-section-heading--filter">
+            <div>
+                <h2 id="overview-categories-title">Your categories</h2>
+            </div>
+            <label class="overview-filter">
+                <input type="checkbox" data-overview-favorites-only>
+                Favorites only
+            </label>
+        </div>
+        <div class="overview-categories" data-overview-categories></div>
+    </section>
+</section>

@@ -1,0 +1,589 @@
+rules_version = '2';
+
+service cloud.firestore {
+    match /databases/{database}/documents {
+        function currencyCode(value) { return value is string && value.matches('^[A-Z]{3}$'); }
+        match /users/{userId}/settings/preferences {
+            function owner() { return request.auth != null && request.auth.uid == userId; }
+            function validPreferences() {
+                let value = request.resource.data;
+                return value.keys().hasAll(['currency', 'secondaryCurrency', 'theme', 'showConverted', 'automatic', 'updatedAt'])
+                    && value.keys().hasOnly(['currency', 'secondaryCurrency', 'theme', 'showConverted', 'automatic', 'updatedAt'])
+                    && currencyCode(value.currency) && currencyCode(value.secondaryCurrency)
+                    && value.theme in ['light', 'dark'] && value.showConverted is bool && value.automatic is bool
+                    && value.updatedAt == request.time;
+            }
+            allow read: if owner();
+            allow create: if owner() && validPreferences();
+            allow update: if owner() && validPreferences() && request.resource.data.currency == resource.data.currency;
+        }
+        // Your existing personal transaction rules.
+        match /users/{userId}/transactions/{transactionId} {
+            allow read, write: if request.auth != null
+                && request.auth.uid == userId;
+        }
+
+        // Your existing personal category rules.
+        match /users/{userId}/moneyItems/{itemId} {
+
+            function ownsData() {
+                return request.auth != null
+                    && request.auth.uid == userId;
+            }
+
+            function validItem() {
+                let item = request.resource.data;
+
+                return item.keys().hasOnly([
+                        'kind', 'name', 'amountCents', 'completedCents',
+                        'description', 'alerts', 'favorite',
+                        'details', 'createdAt'
+                    ])
+                    && item.kind in [
+                        'budget', 'savings', 'debt',
+                        'lend', 'subscriptions'
+                    ]
+                    && item.name is string
+                    && item.name.size() > 0
+                    && item.name.size() <= 80
+                    && item.description is string
+                    && item.description.size() <= 2000
+                    && item.amountCents is int
+                    && item.amountCents > 0
+                    && item.completedCents is int
+                    && item.completedCents >= 0
+                    && (
+                        item.kind == 'budget'
+                        || item.completedCents <= item.amountCents
+                    )
+                    && item.alerts is bool
+                    && item.favorite is bool
+                    && item.details is map
+                    && item.createdAt is timestamp;
+            }
+
+            allow read: if ownsData();
+
+            // New categories use the current server timestamp.
+            allow create: if ownsData()
+                && validItem()
+                && request.resource.data.createdAt == request.time;
+
+            // Allow editing, favorites, alerts, and transaction balances.
+            // The category kind and creation timestamp stay unchanged.
+            allow update: if ownsData()
+                && validItem()
+                && request.resource.data.diff(resource.data)
+                    .affectedKeys().hasOnly([
+                        'name',
+                        'amountCents',
+                        'completedCents',
+                        'description',
+                        'alerts',
+                        'favorite',
+                        'details'
+                    ]);
+
+            allow delete: if ownsData();
+        }
+
+        // Shared Wallet rules for Firebase Spark.
+        function sharedAccount() {
+            return request.auth != null
+                && request.auth.token.firebase.sign_in_provider != 'anonymous'
+                && request.auth.token.email is string;
+        }
+        function sharedEmail() { return request.auth.token.email.lower(); }
+        function sharedRecipient(invitation) {
+            return sharedAccount() && invitation.recipientEmail == sharedEmail();
+        }
+        function sharedMemberData(wallet) {
+            return sharedAccount() && request.auth.uid in wallet.memberUids;
+        }
+        function sharedManagerData(wallet) {
+            return sharedMemberData(wallet)
+                && wallet.members[request.auth.uid].role in ['creator', 'admin'];
+        }
+        function sharedWallet(walletId) {
+            return get(/databases/$(database)/documents/sharedWallets/$(walletId)).data;
+        }
+        function sharedWalletAfter(walletId) {
+            return getAfter(/databases/$(database)/documents/sharedWallets/$(walletId)).data;
+        }
+        function sharedEvent(walletId, wallet) {
+            return getAfter(/databases/$(database)/documents/sharedWallets/$(walletId)/activity/$(wallet.lastActivityId)).data;
+        }
+        function sharedText(value, maximum) {
+            return value is string && value.size() > 0 && value.size() <= maximum;
+        }
+        function sharedAccess(role, categories) {
+            return role in ['member', 'admin'] && categories is list
+                && categories.size() <= 100 && categories.toSet().size() == categories.size()
+                && (role == 'member' || categories.size() == 0);
+        }
+        function sharedProfile(member, uid) {
+            return member is map && member.keys().hasAll(['uid', 'email', 'displayName', 'role', 'categoryIds', 'joinedAt'])
+                && member.keys().hasOnly(['uid', 'email', 'displayName', 'role', 'categoryIds', 'joinedAt'])
+                && member.uid == uid && member.email == sharedEmail()
+                && sharedText(member.email, 254) && sharedText(member.displayName, 80)
+                && member.joinedAt == request.time;
+        }
+        function sharedWalletShape(wallet) {
+            return wallet.keys().hasAll(['name', 'creatorUid', 'members', 'memberUids', 'pendingInvitations',
+                    'lastActivityId', 'createdAt', 'updatedAt'])
+                && wallet.keys().hasOnly(['name', 'creatorUid', 'members', 'memberUids', 'pendingInvitations',
+                    'lastActivityId', 'createdAt', 'updatedAt', 'currency', 'showConverted'])
+                && currencyCode(wallet.get('currency', 'AED')) && wallet.get('showConverted', false) is bool
+                && sharedText(wallet.name, 80) && sharedText(wallet.creatorUid, 128)
+                && sharedText(wallet.lastActivityId, 128) && wallet.createdAt is timestamp
+                && wallet.updatedAt == request.time
+                && wallet.members is map && wallet.memberUids is list
+                && wallet.memberUids.size() > 0 && wallet.memberUids.size() <= 100
+                && wallet.members.keys().toSet() == wallet.memberUids.toSet()
+                && wallet.memberUids.toSet().size() == wallet.memberUids.size()
+                && wallet.creatorUid in wallet.memberUids
+                && wallet.members[wallet.creatorUid].role == 'creator'
+                && wallet.pendingInvitations is map && wallet.pendingInvitations.size() <= 100;
+        }
+        function sharedEventShape(event) {
+            return event.keys().hasAll(['action', 'actorUid', 'actorName', 'entityType', 'entityId', 'before', 'after', 'createdAt'])
+                && event.keys().hasOnly(['action', 'actorUid', 'actorName', 'entityType', 'entityId', 'before', 'after', 'createdAt'])
+                && event.actorUid == request.auth.uid && sharedText(event.actorName, 80)
+                && sharedText(event.entityId, 128) && event.after is map
+                && event.createdAt == request.time;
+        }
+        function sharedUpdatedWalletShape(before, after) {
+            // Financial writes only replace the time and audit pointer. All
+            // wallet settings and membership have already been validated and
+            // must stay byte-for-byte unchanged on these writes.
+            return after.diff(before).affectedKeys().hasOnly(['updatedAt', 'lastActivityId'])
+                ? after.updatedAt == request.time && sharedText(after.lastActivityId, 128)
+                : sharedWalletShape(after);
+        }
+        function sharedCreate(walletId, wallet, event) {
+            let creator = wallet.members[request.auth.uid];
+            return wallet.creatorUid == request.auth.uid
+                && wallet.createdAt == request.time
+                && wallet.memberUids == [request.auth.uid] && wallet.pendingInvitations.size() == 0
+                && sharedProfile(creator, request.auth.uid)
+                && creator.role == 'creator' && creator.categoryIds == []
+                && event.action == 'wallet.created' && event.entityType == 'wallet' && event.entityId == walletId
+                && event.actorName == creator.displayName && event.before == null
+                && event.after == ('currency' in wallet
+                    ? {'name': wallet.name, 'currency': wallet.currency, 'showConverted': wallet.showConverted}
+                    : {'name': wallet.name});
+        }
+        function sharedRename(walletId, before, after, event) {
+            return event.action == 'wallet.renamed' && event.entityType == 'wallet' && event.entityId == walletId
+                && after.name != before.name
+                && after.diff(before).affectedKeys().hasOnly(['name', 'updatedAt', 'lastActivityId'])
+                && event.before == {'name': before.name} && event.after == {'name': after.name};
+        }
+        function sharedInvite(walletId, before, after, event) {
+            let invitation = getAfter(/databases/$(database)/documents/sharedWalletInvitations/$(event.entityId)).data;
+            let email = invitation.recipientEmail;
+            return event.action == 'member.invited' && event.entityType == 'invitation'
+                && invitation.walletId == walletId && invitation.status == 'pending'
+                && !(email in before.pendingInvitations)
+                && after.pendingInvitations.diff(before.pendingInvitations).affectedKeys() == [email].toSet()
+                && after.pendingInvitations[email] == event.entityId
+                && after.diff(before).affectedKeys().hasOnly(['pendingInvitations', 'updatedAt', 'lastActivityId'])
+                && event.before == null
+                && event.after == {'recipientEmail': email, 'role': invitation.role, 'categoryIds': invitation.categoryIds};
+        }
+        function sharedRole(before, after, event) {
+            let uid = event.entityId;
+            let oldMember = before.members[uid];
+            let newMember = after.members[uid];
+            return event.action == 'member.role-updated' && event.entityType == 'member'
+                && uid != before.creatorUid && sharedAccess(newMember.role, newMember.categoryIds)
+                && newMember.diff(oldMember).affectedKeys().hasOnly(['role', 'categoryIds'])
+                && after.members.diff(before.members).affectedKeys().hasOnly([uid])
+                && after.diff(before).affectedKeys().hasOnly(['members', 'updatedAt', 'lastActivityId'])
+                && event.before == {'role': oldMember.role, 'categoryIds': oldMember.categoryIds}
+                && event.after == {'role': newMember.role, 'categoryIds': newMember.categoryIds};
+        }
+        function sharedRemove(before, after, event) {
+            let uid = event.entityId;
+            let oldMember = before.members[uid];
+            let removedEmails = before.pendingInvitations.diff(after.pendingInvitations).addedKeys();
+            return event.action == 'member.removed' && event.entityType == 'member' && uid != before.creatorUid
+                && after.members.diff(before.members).removedKeys() == [uid].toSet()
+                && after.members.diff(before.members).affectedKeys() == [uid].toSet()
+                && after.memberUids.toSet() == before.memberUids.toSet().difference([uid].toSet())
+                && after.pendingInvitations.diff(before.pendingInvitations).affectedKeys()
+                    == after.pendingInvitations.diff(before.pendingInvitations).removedKeys()
+                && after.diff(before).affectedKeys().hasOnly(['members', 'memberUids', 'pendingInvitations', 'updatedAt', 'lastActivityId'])
+                && event.before == {'displayName': oldMember.displayName, 'role': oldMember.role}
+                && event.after.keys().hasOnly(['removed', 'revokedEmails']) && event.after.removed == true
+                && event.after.revokedEmails is list && event.after.revokedEmails.toSet() == removedEmails
+                && event.after.revokedEmails.size() == removedEmails.size();
+        }
+        function sharedDecision(walletId, before, after, event) {
+            let invitation = get(/databases/$(database)/documents/sharedWalletInvitations/$(event.entityId)).data;
+            let resolved = getAfter(/databases/$(database)/documents/sharedWalletInvitations/$(event.entityId)).data;
+            let email = invitation.recipientEmail;
+            return event.entityType == 'invitation' && invitation.walletId == walletId
+                && invitation.status == 'pending' && sharedRecipient(invitation)
+                && before.pendingInvitations[email] == event.entityId
+                && after.pendingInvitations.diff(before.pendingInvitations).removedKeys() == [email].toSet()
+                && after.pendingInvitations.diff(before.pendingInvitations).affectedKeys() == [email].toSet()
+                && resolved.recipientUid == request.auth.uid && resolved.respondedAt == request.time
+                && event.before == {'status': 'pending'}
+                && ((event.action == 'invitation.accepted' && resolved.status == 'accepted'
+                    && sharedAccept(before, after, invitation, event))
+                    || (event.action == 'invitation.declined' && resolved.status == 'declined'
+                    && after.diff(before).affectedKeys().hasOnly(['pendingInvitations', 'updatedAt', 'lastActivityId'])
+                    && event.after == {'status': 'declined', 'memberId': request.auth.uid}));
+        }
+        function sharedAccept(before, after, invitation, event) {
+            let uid = request.auth.uid;
+            let inviter = before.members[invitation.inviterUid];
+            let member = after.members[uid];
+            return !(uid in before.memberUids) && inviter.role in ['creator', 'admin']
+                && inviter.joinedAt == invitation.inviterJoinedAt
+                && sharedProfile(member, uid) && sharedAccess(member.role, member.categoryIds)
+                && member.role == invitation.role && member.categoryIds == invitation.categoryIds
+                && event.actorName == member.displayName
+                && after.members.diff(before.members).addedKeys() == [uid].toSet()
+                && after.members.diff(before.members).affectedKeys() == [uid].toSet()
+                && after.memberUids.toSet() == before.memberUids.toSet().union([uid].toSet())
+                && after.diff(before).affectedKeys().hasOnly(['members', 'memberUids', 'pendingInvitations', 'updatedAt', 'lastActivityId'])
+                && event.after == {'status': 'accepted', 'memberId': uid, 'role': member.role, 'categoryIds': member.categoryIds};
+        }
+        function sharedUpdate(walletId, before, after, event) {
+            return after.creatorUid == before.creatorUid && after.createdAt == before.createdAt
+                && after.members[before.creatorUid] == before.members[before.creatorUid]
+                && after.lastActivityId != before.lastActivityId
+                && ((sharedManagerData(before) && event.actorName == before.members[request.auth.uid].displayName
+                    && ((event.action == 'wallet.renamed' && sharedRename(walletId, before, after, event))
+                        || (event.action == 'member.invited' && sharedInvite(walletId, before, after, event))
+                        || (event.action == 'member.role-updated' && sharedRole(before, after, event))
+                        || (event.action == 'member.removed' && sharedRemove(before, after, event))
+                        || (event.action in ['category.created', 'category.updated', 'category.deleted',
+                            'category.favorite-updated', 'category.alerts-updated']
+                            && sharedMoneyChange(walletId, before, after, event))))
+                    || (event.action in ['transaction.created', 'transaction.updated', 'transaction.deleted']
+                        && sharedTransactionChange(walletId, before, after, event))
+                    || (event.action in ['invitation.accepted', 'invitation.declined']
+                        && sharedDecision(walletId, before, after, event)));
+        }
+        
+        function sharedMoneySnapshot(item) {
+            return {'kind': item.kind, 'name': item.name, 'amountCents': item.amountCents,
+                'completedCents': item.completedCents, 'description': item.description,
+                'alerts': item.alerts, 'favorite': item.favorite, 'details': item.details};
+        }
+        function sharedMoneyChange(walletId, before, after, event) {
+            let itemPath = /databases/$(database)/documents/sharedWallets/$(walletId)/moneyItems/$(event.entityId);
+            return event.entityType == 'moneyItem'
+                && after.diff(before).affectedKeys().hasOnly(['updatedAt', 'lastActivityId'])
+                && ((event.action == 'category.created' && !exists(itemPath) && existsAfter(itemPath)
+                    && event.before == null && event.after == sharedMoneySnapshot(getAfter(itemPath).data))
+                || (event.action in ['category.updated', 'category.favorite-updated', 'category.alerts-updated']
+                    && exists(itemPath) && existsAfter(itemPath)
+                    && getAfter(itemPath).data.updatedAt == request.time && getAfter(itemPath).data.updatedBy == request.auth.uid
+                    && event.before == sharedMoneySnapshot(get(itemPath).data)
+                    && event.after == sharedMoneySnapshot(getAfter(itemPath).data))
+                || (event.action == 'category.deleted' && exists(itemPath) && !existsAfter(itemPath)
+                    && event.before == sharedMoneySnapshot(get(itemPath).data) && event.after == {'deleted': true}));
+        }
+        function sharedDate(value) {
+            let parts = value.split('-');
+            let year = int(parts[0]);
+            let month = int(parts[1]);
+            let day = int(parts[2]);
+            let leap = year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
+            let days = month == 2 ? (leap ? 29 : 28) : (month in [4, 6, 9, 11] ? 30 : 31);
+            return value is string && value.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')
+                && year > 0 && month >= 1 && month <= 12 && day > 0 && day <= days;
+        }
+        function sharedMoneyDetails(kind, details) {
+            return details is map
+                && ((kind == 'budget' && details.keys().hasOnly(['period', 'startDate'])
+                    && details.period in ['weekly', 'monthly', 'yearly'] && sharedDate(details.startDate))
+                || (kind == 'savings' && details.keys().hasOnly(['start', 'targetDate'])
+                    && sharedDate(details.start) && sharedDate(details.targetDate) && details.targetDate >= details.start)
+                || (kind == 'debt' && details.keys().hasOnly(['creditor', 'start', 'due', 'paymentCents'])
+                    && sharedText(details.creditor, 80) && sharedDate(details.start) && sharedDate(details.due) && details.due >= details.start
+                    && (details.paymentCents == null || (details.paymentCents is int && details.paymentCents >= 0 && details.paymentCents <= 9007199254740991)))
+                || (kind == 'lend' && details.keys().hasOnly(['borrower', 'lentDate', 'due'])
+                    && sharedText(details.borrower, 80) && sharedDate(details.lentDate) && sharedDate(details.due) && details.due >= details.lentDate)
+                || (kind == 'subscriptions' && details.keys().hasOnly(['cycle', 'startDate', 'nextPaymentDate', 'category', 'autoRenew'])
+                    && details.cycle in ['weekly', 'monthly', 'quarterly', 'yearly'] && details.autoRenew is bool
+                    && details.category is string && details.category.size() <= 80
+                    && sharedDate(details.startDate) && sharedDate(details.nextPaymentDate) && details.nextPaymentDate >= details.startDate));
+        }
+        function sharedMoneyShape(item) {
+            return item.keys().hasAll(['kind', 'name', 'amountCents', 'completedCents', 'description', 'alerts', 'favorite',
+                    'details', 'createdAt', 'createdBy', 'updatedAt', 'updatedBy'])
+                && item.keys().hasOnly(['kind', 'name', 'amountCents', 'completedCents', 'description', 'alerts', 'favorite',
+                    'details', 'createdAt', 'createdBy', 'updatedAt', 'updatedBy'])
+                && item.kind in ['budget', 'savings', 'debt', 'lend', 'subscriptions']
+                && sharedText(item.name, 80) && item.description is string && item.description.size() <= 2000
+                && item.amountCents is int && item.amountCents > 0 && item.amountCents <= 9007199254740991
+                && item.completedCents is int && item.completedCents >= 0 && item.completedCents <= 9007199254740991
+                && (item.kind == 'budget' || item.completedCents <= item.amountCents)
+                && item.alerts is bool && item.favorite is bool && item.createdAt is timestamp
+                && sharedText(item.createdBy, 128) && item.updatedAt == request.time && item.updatedBy == request.auth.uid
+                && sharedMoneyDetails(item.kind, item.details);
+        }
+        function sharedMoneyLinked(walletId, itemId, action) {
+            let before = sharedWallet(walletId);
+            let after = sharedWalletAfter(walletId);
+            let event = sharedEvent(walletId, after);
+            return sharedManagerData(before) && after.lastActivityId != before.lastActivityId
+                && after.updatedAt == request.time && event.actorUid == request.auth.uid
+                && event.entityType == 'moneyItem' && event.entityId == itemId && event.action == action;
+        }
+        function sharedMoneyEdit(walletId, itemId, before, after) {
+            let wallet = sharedWalletAfter(walletId);
+            let action = sharedEvent(walletId, wallet).action;
+            return sharedMoneyShape(after) && after.kind == before.kind && after.createdAt == before.createdAt
+                && after.createdBy == before.createdBy && after.completedCents == before.completedCents
+                && ((action == 'category.updated'
+                    && after.diff(before).affectedKeys().hasOnly(['name', 'amountCents', 'description', 'alerts', 'details', 'updatedAt', 'updatedBy']))
+                || (action == 'category.favorite-updated' && after.diff(before).affectedKeys().hasOnly(['favorite', 'updatedAt', 'updatedBy']))
+                || (action == 'category.alerts-updated' && after.diff(before).affectedKeys().hasOnly(['alerts', 'updatedAt', 'updatedBy'])))
+                && sharedMoneyLinked(walletId, itemId, action);
+        }
+        
+        function sharedTransactionSnapshotMatches(item, state) {
+            // Comparing maps avoids rebuilding the same projection on every
+            // linked write and keeps audited FX changes within the rule budget.
+            return state.keys().hasAll(['type', 'itemId', 'itemName', 'amountCents', 'date', 'description', 'ownerUid', 'ownerName'])
+                && state.keys().hasOnly(['type', 'itemId', 'itemName', 'amountCents', 'date', 'description', 'ownerUid', 'ownerName', 'fx'])
+                && state.diff(item).affectedKeys().hasOnly(['createdAt', 'createdBy', 'updatedAt', 'updatedBy']);
+        }
+        function sharedTransactionKind(type) { return type == 'subscriptions' ? 'subscriptions' : type; }
+        function sharedProgressType(type) { return type in ['budget', 'savings', 'debt', 'lend']; }
+        function sharedTransactionAccess(wallet, item) {
+            return item == null || wallet.members[request.auth.uid].role in ['creator', 'admin']
+                || (item.ownerUid == request.auth.uid
+                    && (item.type == 'income' || item.itemId in wallet.members[request.auth.uid].categoryIds));
+        }
+        function sharedLinkedTransactionTarget(walletId, item) {
+            let path = /databases/$(database)/documents/sharedWallets/$(walletId)/moneyItems/$(item.itemId);
+            return exists(path) && get(path).data.kind == sharedTransactionKind(item.type)
+                && item.itemName == get(path).data.name;
+        }
+        function sharedTransactionTarget(walletId, item) {
+            return item == null || item.type == 'income' || sharedLinkedTransactionTarget(walletId, item);
+        }
+        function sharedTransactionDelta(itemId, event) {
+            let old = event.before;
+            let next = event.action == 'transaction.deleted' ? null : event.after;
+            return (next != null && next.itemId == itemId && sharedProgressType(next.type) ? next.amountCents : 0)
+                - (old != null && old.itemId == itemId && sharedProgressType(old.type) ? old.amountCents : 0);
+        }
+        function sharedExistingBalance(path, itemId, event) {
+            let before = get(path).data;
+            let after = getAfter(path).data;
+            let delta = sharedTransactionDelta(itemId, event);
+            return existsAfter(path)
+                && (event.before == null || event.before.itemId != itemId
+                    || before.kind == sharedTransactionKind(event.before.type))
+                && after.completedCents == before.completedCents + delta
+                && after.completedCents >= 0 && after.completedCents <= 9007199254740991
+                && (before.kind == 'budget' || after.completedCents <= before.amountCents)
+                && (delta == 0 ? after == before
+                    : after.diff(before).affectedKeys().hasOnly(['completedCents', 'updatedAt', 'updatedBy'])
+                        && after.updatedAt == request.time && after.updatedBy == request.auth.uid);
+        }
+        function sharedTransactionBalance(walletId, itemId, event) {
+            let path = /databases/$(database)/documents/sharedWallets/$(walletId)/moneyItems/$(itemId);
+            return exists(path) ? sharedExistingBalance(path, itemId, event) : !existsAfter(path);
+        }
+        function sharedTransactionBalances(walletId, event) {
+            let old = event.before;
+            let next = event.action == 'transaction.deleted' ? null : event.after;
+            return (old == null || old.itemId == null || sharedTransactionBalance(walletId, old.itemId, event))
+                && (next == null || next.itemId == null || (old != null && next.itemId == old.itemId)
+                    || sharedTransactionBalance(walletId, next.itemId, event));
+        }
+        function sharedTransactionChange(walletId, before, after, event) {
+            let path = /databases/$(database)/documents/sharedWallets/$(walletId)/transactions/$(event.entityId);
+            let next = event.action == 'transaction.deleted' ? null : event.after;
+            return sharedMemberData(before) && event.actorName == before.members[request.auth.uid].displayName
+                && event.entityType == 'transaction'
+                && after.diff(before).affectedKeys().hasOnly(['updatedAt', 'lastActivityId'])
+                && ((event.action == 'transaction.created' && !exists(path) && existsAfter(path)
+                        && event.before == null && sharedTransactionSnapshotMatches(getAfter(path).data, event.after)
+                        && event.after.ownerUid in before.memberUids
+                        && event.after.ownerName == before.members[event.after.ownerUid].displayName)
+                    || (event.action == 'transaction.updated' && exists(path) && existsAfter(path)
+                        && getAfter(path).data.updatedAt == request.time && getAfter(path).data.updatedBy == request.auth.uid
+                        && sharedTransactionSnapshotMatches(get(path).data, event.before)
+                        && sharedTransactionSnapshotMatches(getAfter(path).data, event.after)
+                        && event.after.ownerUid == event.before.ownerUid && event.after.ownerName == event.before.ownerName)
+                    || (event.action == 'transaction.deleted' && exists(path) && !existsAfter(path)
+                        && sharedTransactionSnapshotMatches(get(path).data, event.before) && event.after == {'deleted': true}))
+                && sharedTransactionAccess(before, event.before) && sharedTransactionAccess(before, next);
+        }
+        function validSharedFx(item, walletId) {
+            let fx = item.get('fx', null);
+            return fx == null || (resource != null && fx == resource.data.get('fx', null)
+                && item.amountCents == resource.data.amountCents)
+                || (fx is map
+                && fx.keys().hasAll(['sourceCurrency', 'sourceAmountCents', 'rate', 'rateDate'])
+                && fx.keys().hasOnly(['sourceCurrency', 'sourceAmountCents', 'rate', 'rateDate'])
+                && currencyCode(fx.sourceCurrency) && fx.sourceCurrency != sharedWallet(walletId).get('currency', 'AED')
+                && fx.sourceAmountCents is int && fx.sourceAmountCents > 0 && fx.sourceAmountCents <= 9007199254740991
+                && fx.rate is number && fx.rate > 0 && fx.rate <= 1000000000 && sharedDate(fx.rateDate)
+                && fx.sourceAmountCents * fx.rate - item.amountCents >= -0.50001
+                && fx.sourceAmountCents * fx.rate - item.amountCents <= 0.50001);
+        }
+        function sharedTransactionShape(item, walletId) {
+            return item.keys().hasAll(['type', 'itemId', 'itemName', 'amountCents', 'date', 'description',
+                    'ownerUid', 'ownerName', 'createdAt', 'createdBy', 'updatedAt', 'updatedBy'])
+                && item.keys().hasOnly(['type', 'itemId', 'itemName', 'amountCents', 'date', 'description',
+                    'ownerUid', 'ownerName', 'createdAt', 'createdBy', 'updatedAt', 'updatedBy', 'fx'])
+                && validSharedFx(item, walletId)
+                && item.type in ['income', 'budget', 'savings', 'debt', 'lend', 'subscriptions']
+                && item.amountCents is int && item.amountCents > 0 && item.amountCents <= 9007199254740991
+                && sharedDate(item.date) && item.description is string && item.description.size() <= 2000
+                && sharedText(item.ownerUid, 128) && sharedText(item.ownerName, 80)
+                && (item.type == 'income' ? item.itemId == null && item.itemName == null
+                    : sharedText(item.itemId, 128) && sharedText(item.itemName, 80))
+                && item.createdAt is timestamp && sharedText(item.createdBy, 128)
+                && item.updatedAt == request.time && item.updatedBy == request.auth.uid;
+        }
+        function sharedTransactionLinked(walletId, transactionId, action) {
+            let before = sharedWallet(walletId);
+            let after = sharedWalletAfter(walletId);
+            let event = sharedEvent(walletId, after);
+            return sharedMemberData(before) && after.lastActivityId != before.lastActivityId
+                && after.updatedAt == request.time && event.actorUid == request.auth.uid
+                && event.entityType == 'transaction' && event.entityId == transactionId && event.action == action
+                // Every ledger write verifies both category results, even if omitted from the batch.
+                && sharedTransactionTarget(walletId, action == 'transaction.deleted' ? null : event.after)
+                && sharedTransactionBalances(walletId, event);
+        }
+        function sharedMoneyProgress(walletId, itemId, before, after) {
+            let oldWallet = sharedWallet(walletId);
+            let wallet = sharedWalletAfter(walletId);
+            let event = sharedEvent(walletId, wallet);
+            // The linked ledger write checks exact deltas, limits, and unchanged metadata.
+            return sharedMemberData(oldWallet) && wallet.lastActivityId != oldWallet.lastActivityId
+                && event.entityType == 'transaction' && event.actorUid == request.auth.uid
+                && event.action in ['transaction.created', 'transaction.updated', 'transaction.deleted']
+                && wallet.updatedAt == request.time
+                && ((event.before != null && event.before.itemId == itemId && sharedProgressType(event.before.type))
+                    || (event.action != 'transaction.deleted' && event.after.itemId == itemId && sharedProgressType(event.after.type)))
+                && after.diff(before).affectedKeys().hasOnly(['completedCents', 'updatedAt', 'updatedBy'])
+                && after.completedCents != before.completedCents;
+        }
+        
+        match /sharedWallets/{walletId} {
+            // This condition also permits a query filtered by the current member UID.
+            allow read: if sharedMemberData(resource.data);
+            allow create: if sharedAccount() && sharedWalletShape(request.resource.data)
+                && !exists(/databases/$(database)/documents/sharedWallets/$(walletId)/activity/$(request.resource.data.lastActivityId))
+                && sharedEventShape(sharedEvent(walletId, request.resource.data))
+                && sharedCreate(walletId, request.resource.data, sharedEvent(walletId, request.resource.data));
+            allow update: if sharedAccount() && sharedUpdatedWalletShape(resource.data, request.resource.data)
+                && !exists(/databases/$(database)/documents/sharedWallets/$(walletId)/activity/$(request.resource.data.lastActivityId))
+                && sharedEventShape(sharedEvent(walletId, request.resource.data))
+                && sharedUpdate(walletId, resource.data, request.resource.data, sharedEvent(walletId, request.resource.data));
+            allow delete: if false;
+        
+            match /activity/{eventId} {
+                allow read: if sharedMemberData(sharedWallet(walletId));
+                // The root's rules bind this event to the exact change in this batch.
+                allow create: if sharedAccount() && sharedEventShape(request.resource.data)
+                    && sharedWalletAfter(walletId).lastActivityId == eventId
+                    && sharedWalletAfter(walletId).updatedAt == request.time
+                    && (!exists(/databases/$(database)/documents/sharedWallets/$(walletId))
+                        || sharedWallet(walletId).lastActivityId != eventId);
+                allow update, delete: if false;
+            }
+            // Category settings are manager-only and must be saved with linked history.
+            match /moneyItems/{itemId} {
+                allow read: if sharedMemberData(sharedWallet(walletId));
+                allow create: if sharedAccount() && sharedMoneyShape(request.resource.data)
+                    && request.resource.data.createdAt == request.time && request.resource.data.createdBy == request.auth.uid
+                    && request.resource.data.completedCents == 0 && request.resource.data.favorite == false
+                    && sharedMoneyLinked(walletId, itemId, 'category.created');
+                allow update: if sharedAccount()
+                    && ((request.resource.data.completedCents != resource.data.completedCents
+                            && sharedMoneyProgress(walletId, itemId, resource.data, request.resource.data))
+                        || sharedMoneyEdit(walletId, itemId, resource.data, request.resource.data));
+                allow delete: if sharedAccount() && sharedMoneyLinked(walletId, itemId, 'category.deleted');
+            }
+            match /transactions/{transactionId} {
+                allow read: if sharedMemberData(sharedWallet(walletId));
+                allow create: if sharedAccount() && sharedTransactionShape(request.resource.data, walletId)
+                    && request.resource.data.createdAt == request.time && request.resource.data.createdBy == request.auth.uid
+                    && sharedTransactionLinked(walletId, transactionId, 'transaction.created');
+                allow update: if sharedAccount() && sharedTransactionShape(request.resource.data, walletId)
+                    && request.resource.data.createdAt == resource.data.createdAt
+                    && request.resource.data.createdBy == resource.data.createdBy
+                    && request.resource.data.ownerUid == resource.data.ownerUid
+                    && request.resource.data.ownerName == resource.data.ownerName
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+                        'type', 'itemId', 'itemName', 'amountCents', 'date', 'description', 'updatedAt', 'updatedBy', 'fx'])
+                    && sharedTransactionLinked(walletId, transactionId, 'transaction.updated');
+                allow delete: if sharedAccount() && sharedTransactionLinked(walletId, transactionId, 'transaction.deleted');
+            }
+        }
+        
+        function sharedInvitationShape(item) {
+            return item.keys().hasAll(['walletId', 'walletName', 'inviterUid', 'inviterName', 'inviterJoinedAt',
+                    'recipientEmail', 'recipientUid', 'role', 'categoryIds', 'status', 'createdAt', 'respondedAt'])
+                && item.keys().hasOnly(['walletId', 'walletName', 'inviterUid', 'inviterName', 'inviterJoinedAt',
+                    'recipientEmail', 'recipientUid', 'role', 'categoryIds', 'status', 'createdAt', 'respondedAt'])
+                && sharedText(item.walletId, 128) && sharedText(item.walletName, 80)
+                && sharedText(item.recipientEmail, 254)
+                && item.recipientEmail == item.recipientEmail.lower()
+                && item.recipientEmail.matches('[^[:space:]@]+@[^[:space:]@]+[.][^[:space:]@]+')
+                && item.recipientEmail != sharedEmail()
+                && sharedAccess(item.role, item.categoryIds)
+                && item.status == 'pending' && item.recipientUid == null
+                && item.createdAt == request.time && item.respondedAt == null;
+        }
+        function sharedInvitationCreate(id, item) {
+            let before = sharedWallet(item.walletId);
+            let after = sharedWalletAfter(item.walletId);
+            let event = sharedEvent(item.walletId, after);
+            return sharedManagerData(before) && sharedInvitationShape(item)
+                && item.inviterUid == request.auth.uid && item.walletName == before.name
+                && item.inviterName == before.members[request.auth.uid].displayName
+                && item.inviterJoinedAt == before.members[request.auth.uid].joinedAt
+                && after.pendingInvitations[item.recipientEmail] == id
+                && after.lastActivityId != before.lastActivityId
+                && event.action == 'member.invited' && event.entityId == id && event.actorUid == request.auth.uid;
+        }
+        function sharedInvitationUpdate(id, before, after) {
+            let walletBefore = sharedWallet(before.walletId);
+            let walletAfter = sharedWalletAfter(before.walletId);
+            let event = sharedEvent(before.walletId, walletAfter);
+            return before.status == 'pending' && walletBefore.lastActivityId != walletAfter.lastActivityId
+                && walletAfter.updatedAt == request.time
+                && ((sharedRecipient(before)
+                    && after.diff(before).affectedKeys().hasOnly(['status', 'recipientUid', 'respondedAt'])
+                    && after.status in ['accepted', 'declined'] && after.recipientUid == request.auth.uid
+                    && after.respondedAt == request.time
+                    && event.action == 'invitation.' + after.status && event.entityId == id)
+                || (sharedManagerData(walletBefore) && event.action == 'wallet.renamed'
+                    && walletBefore.pendingInvitations[before.recipientEmail] == id
+                    && after.diff(before).affectedKeys().hasOnly(['walletName']) && after.walletName == walletAfter.name)
+                || (sharedManagerData(walletBefore) && event.action == 'member.removed'
+                    && after.diff(before).affectedKeys().hasOnly(['status', 'respondedAt'])
+                    && after.status == 'revoked' && after.respondedAt == request.time
+                    && walletBefore.pendingInvitations[before.recipientEmail] == id
+                    && !(before.recipientEmail in walletAfter.pendingInvitations)
+                    && (before.inviterUid == event.entityId
+                        || before.recipientEmail == walletBefore.members[event.entityId].email)));
+        }
+        match /sharedWalletInvitations/{invitationId} {
+            allow read: if sharedRecipient(resource.data) || sharedManagerData(sharedWallet(resource.data.walletId));
+            allow create: if sharedAccount() && sharedInvitationCreate(invitationId, request.resource.data);
+            allow update: if sharedAccount() && sharedInvitationUpdate(invitationId, resource.data, request.resource.data);
+            allow delete: if false;
+        }
+        
+        // Legacy server-only indexes/notifications have no client allow rule.
+        // Other unspecified paths are denied.
+    }
+}
+

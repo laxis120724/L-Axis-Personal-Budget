@@ -1,0 +1,43 @@
+<div class="money-overview shared-money-overview" aria-labelledby="shared-wallet-title">
+    <div class="overview-section-heading overview-section-heading--row">
+        <h2>Wallet overview</h2>
+        <span class="overview-count" data-overview-count>—</span>
+    </div>
+    <p class="overview-status money-empty" data-overview-status role="status">Loading categories…</p>
+    <section aria-labelledby="shared-overview-month-title">
+        <div class="overview-section-heading overview-section-heading--row">
+            <h2 id="shared-overview-month-title">This month</h2>
+            <span class="overview-period" data-overview-month></span>
+        </div>
+        <p class="overview-status money-empty" data-overview-transaction-status role="status">Loading transactions…</p>
+        <div class="overview-summary" data-overview-summary aria-label="Shared wallet monthly transaction summary"></div>
+    </section>
+    <section aria-labelledby="shared-overview-charts-title">
+        <div class="overview-section-heading"><h2 id="shared-overview-charts-title">Group activity</h2></div>
+        <div class="overview-charts" data-overview-charts></div>
+    </section>
+    <div class="shared-overview-group">
+        <section class="overview-chart shared-contributions" data-overview-chart="contributions" aria-labelledby="shared-contributions-title">
+            <div class="overview-section-heading overview-section-heading--row">
+                <h3 id="shared-contributions-title">Member contributions</h3>
+                <a class="overview-activity__link" href="#sharedwallet-info">Wallet Info →</a>
+            </div>
+            <p>Income / contributions · All time</p>
+            <div data-shared-overview-contributions></div>
+        </section>
+        <section class="overview-activity" aria-labelledby="shared-overview-recent-title">
+            <div class="overview-section-heading overview-section-heading--row">
+                <h2 id="shared-overview-recent-title">Recent transactions</h2>
+                <a class="overview-activity__link" href="#sharedwallet-transaction">View all →</a>
+            </div>
+            <div data-overview-recent></div>
+        </section>
+    </div>
+    <section aria-labelledby="shared-overview-categories-title">
+        <div class="overview-section-heading overview-section-heading--filter">
+            <h2 id="shared-overview-categories-title">Wallet categories</h2>
+            <label class="overview-filter"><input type="checkbox" data-overview-favorites-only>Favorites only</label>
+        </div>
+        <div class="overview-categories" data-overview-categories></div>
+    </section>
+</div>

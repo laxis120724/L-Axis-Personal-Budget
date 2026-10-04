@@ -1,0 +1,56 @@
+.subscriptions-page {
+    --money-accent: #14869e;
+    --money-action: #116c81;
+    --money-tint: #e1f5fb;
+}
+
+.subscriptions-page .subscription-stat--next strong {
+    color: var(--money-accent);
+    font-size: 22px;
+}
+
+.subscriptions-page__hint {
+    margin: 12px 0 0;
+    color: var(--color-muted);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.subscription-card__price {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.subscription-card__price span {
+    font-size: 13px;
+}
+
+.subscription-card__details {
+    display: grid;
+    gap: 12px;
+    margin: 20px 0;
+    font-size: 12px;
+}
+
+.subscription-card__details > div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 6px 12px;
+}
+
+.subscription-card__details dt {
+    color: var(--color-muted);
+}
+
+.subscription-card__details dd {
+    margin: 0;
+    font-weight: 600;
+}
+
+.subscription-card__status {
+    color: #047857;
+    font-weight: 600;
+}

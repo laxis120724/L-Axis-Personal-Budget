@@ -1,0 +1,37 @@
+:root {
+    --color-background: #f5f8f6;
+    --color-surface: #ffffff;
+    --color-text: #18372c;
+    --color-muted: #63776e;
+    --brand-primary: #176443;
+    --brand-tint: #eaf4ee;
+    --color-primary: var(--brand-primary);
+    --color-border: #dce7df;
+
+    --sidebar-width: 230px;
+    --radius: 12px;
+    --money-radius: 18px;
+    --money-border: #dce7df;
+    --money-shadow: 0 5px 18px rgb(22 58 41 / 4%);
+
+    color-scheme: light;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100dvh;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: var(--color-background);
+    color: var(--color-text);
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}

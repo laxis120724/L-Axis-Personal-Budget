@@ -1,0 +1,186 @@
+<section class="budget-page" aria-labelledby="budget-title">
+    <div class="budget-heading">
+        <div>
+            <h1 id="budget-title">Budget categories</h1>
+        </div>
+
+        <button type="button" class="budget-button" id="open-budget-dialog" data-open-money-dialog>
+            + New budget
+        </button>
+    </div>
+
+    <!-- Summary -->
+    <div class="budget-summary">
+        <div class="budget-stat">
+            <span>Total categories</span>
+            <strong>—</strong>
+        </div>
+
+        <div class="budget-stat">
+            <span>Total allocation</span>
+            <strong>—</strong>
+        </div>
+
+        <div class="budget-stat">
+            <span>Total spent</span>
+            <strong>—</strong>
+        </div>
+
+        <div class="budget-stat budget-stat--remaining">
+            <span>Total remaining</span>
+            <strong>—</strong>
+        </div>
+    </div>
+
+    <!-- Allocation chart -->
+    <section class="budget-allocation"
+             aria-labelledby="allocation-title">
+        <div class="budget-section-heading">
+            <h2 id="allocation-title">Where your budget goes</h2>
+            <span>Current limits</span>
+        </div>
+
+        <div class="budget-allocation__bar" role="img" aria-label="Allocation unavailable"></div>
+
+        <ul class="budget-allocation__legend"></ul>
+    </section>
+
+    <div class="budget-grid"></div>
+
+    <template data-money-card-template>
+        <article class="budget-card">
+            <div class="budget-card__heading">
+                <h2></h2>
+                <div class="budget-card__actions">
+                    <button type="button" class="budget-card__favorite" aria-label="Toggle favorite" aria-pressed="false">
+                        <span aria-hidden="true"></span>
+                    </button>
+                    <div class="money-card__menu">
+                        <button type="button" data-money-menu-toggle
+                                aria-label="Budget actions" aria-expanded="false">&#8943;</button>
+                        <div class="money-card__menu-panel" data-money-menu
+                             role="group" aria-label="Budget actions" hidden>
+                            <button type="button" data-money-action="edit">Edit</button>
+                            <button type="button" class="money-card__menu-danger"
+                                    data-money-action="delete">Delete</button>
+                            <button type="button" data-money-action="notifications"
+                                    role="switch" aria-checked="false">
+                                <span>Notifications</span>
+                                <span class="money-card__notification-status">
+                                    <span data-money-notification-state aria-hidden="true">Off</span>
+                                    <span class="money-card__notification-toggle" aria-hidden="true"></span>
+                                </span>
+                            </button>
+                            <p class="money-menu-error" data-money-menu-error role="alert" hidden></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="budget-card__description"></p>
+            <div class="budget-card__limit">
+                <span>Limit</span>
+                <strong></strong>
+            </div>
+            <div class="budget-card__progress-label">
+                <span></span>
+                <strong></strong>
+            </div>
+            <progress max="1" value="0" aria-label="Budget used"></progress>
+            <p class="budget-card__remaining"><strong></strong></p>
+            <div class="budget-card__footer">
+                <span></span>
+                <span class="budget-alert"></span>
+            </div>
+        </article>
+    </template>
+
+    <dialog id="budget-dialog" class="budget-dialog" data-money-form-dialog
+            aria-labelledby="new-budget-title">
+    <section class="budget-create">
+        <div class="budget-dialog__heading">
+            <h2 id="new-budget-title" data-money-form-title>New budget</h2>
+            <button type="button" class="budget-dialog__close"
+                    data-close-money aria-label="Close new budget">
+                &times;
+            </button>
+        </div>
+        <p data-money-form-description>Give your category a name and set a spending limit.</p>
+
+        <form class="budget-form" data-money-form>
+            <div class="budget-field budget-field--full">
+                <label for="budget-name">Budget name</label>
+                <input id="budget-name" name="name" type="text"
+                       placeholder="e.g. Groceries" maxlength="80" required autofocus>
+            </div>
+
+            <div class="budget-field">
+                <label for="budget-amount">Limit / target amount</label>
+                <input id="budget-amount" name="amount"
+                       type="number" min="0.01" step="0.01"
+                       placeholder="0.00" required>
+            </div>
+
+            <div class="budget-field">
+                <label for="budget-period">Budget period</label>
+                <select id="budget-period" name="period">
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly" selected>Monthly</option>
+                    <option value="yearly">Yearly</option>
+                </select>
+            </div>
+
+            <div class="budget-field">
+                <label for="budget-start">Starting date</label>
+                <input id="budget-start" name="startDate"
+                       type="date" required>
+            </div>
+
+            <div class="budget-field budget-field--full">
+                <label for="budget-description">Description</label>
+                <textarea id="budget-description" name="description"
+                          rows="3" maxlength="2000"
+                          placeholder="What should this budget cover?"></textarea>
+            </div>
+
+            <label class="budget-alert-setting">
+                <input type="checkbox" name="alerts" checked>
+                <span>
+                    <strong>Enable alerts</strong>
+                    <small>Notify me when spending approaches the limit.</small>
+                </span>
+            </label>
+
+            <p class="money-form__error" data-money-form-error role="alert" hidden></p>
+
+            <div class="budget-form__actions">
+                <button type="button" class="budget-button budget-button--secondary"
+                        data-close-money>Cancel</button>
+                <button type="submit" class="budget-button">
+                    Create budget
+                </button>
+            </div>
+        </form>
+    </section>
+    </dialog>
+
+    <dialog class="money-dialog money-delete-dialog" data-money-delete-dialog
+            aria-labelledby="budget-delete-title" aria-describedby="budget-delete-description">
+        <section class="money-create">
+            <div class="money-dialog__heading">
+                <h2 id="budget-delete-title">Delete budget</h2>
+                <button type="button" class="money-dialog__close" data-close-money-delete
+                        aria-label="Close delete budget">&times;</button>
+            </div>
+            <p id="budget-delete-description"><strong data-money-delete-name>This budget</strong>
+                will be permanently deleted and cannot be restored.</p>
+            <form class="money-delete-dialog__form" data-money-delete-form>
+                <p class="money-form__error" data-money-delete-error role="alert" hidden></p>
+                <div class="money-form__actions">
+                    <button type="button" class="money-button money-button--secondary"
+                            data-close-money-delete autofocus>Cancel</button>
+                    <button type="submit" class="money-button money-button--danger">Confirm delete</button>
+                </div>
+            </form>
+        </section>
+    </dialog>
+</section>

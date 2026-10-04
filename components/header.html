@@ -1,0 +1,47 @@
+<header class="header">
+    <a href="#dashboard" class="header__brand">L-Axis</a>
+
+    <div class="header__actions">
+        <div class="header__calendar">
+        <button class="header__icon-button" type="button" data-calendar-toggle aria-label="Open calendar" title="Calendar" aria-expanded="false" aria-controls="calendar-preview">
+            <img src="assets/icons/calendar.svg" alt="" width="22" height="22">
+            <span class="calendar-count" data-calendar-count hidden></span>
+        </button>
+        <section class="calendar-panel" id="calendar-preview" data-calendar-panel aria-label="Due today" hidden>
+            <div class="calendar-panel__heading"><h2>Due today</h2><span data-calendar-today-label></span></div>
+            <p class="calendar-status" data-calendar-preview-status role="status" hidden></p>
+            <div class="calendar-preview-list" data-calendar-preview-list></div>
+            <a class="calendar-view-all" href="#calendar" data-calendar-view-all>View full calendar →</a>
+        </section>
+        </div>
+
+        <div class="header__invitations">
+        <button class="header__icon-button" type="button" data-invitations-toggle aria-label="Open notifications" title="Notifications" aria-expanded="false" aria-controls="shared-wallet-invitations">
+            <img src="assets/icons/notification.svg" alt="" width="22" height="22">
+            <span class="invitations-count" data-invitations-count hidden></span>
+        </button>
+        <section class="invitations-panel notifications-panel" id="shared-wallet-invitations" data-invitations-panel aria-label="Notifications" hidden>
+            <div class="notifications-panel__heading">
+                <h2>Notifications</h2>
+                <button type="button" class="notifications-read-all" data-notifications-read-all>Mark all read</button>
+            </div>
+            <div class="invitations-list" data-invitations-list></div>
+            <p class="invitations-status" data-invitations-status role="status" hidden></p>
+            <a href="#notifications" class="notifications-view-all" data-notifications-view-all>View all notifications →</a>
+        </section>
+        </div>
+
+        <div class="header__account">
+        <button class="header__icon-button" type="button" data-account-toggle aria-label="Open user menu" title="User menu" aria-expanded="false" aria-controls="account-menu">
+            <img src="assets/icons/user.svg" alt="" width="22" height="22">
+        </button>
+        <div class="header__account-menu" id="account-menu" data-account-menu hidden>
+            <strong data-account-name>Your account</strong>
+            <span data-account-email></span>
+            <a class="header__settings-link" href="#setting">Settings</a>
+            <button type="button" data-account-signout>Sign out</button>
+            <p data-account-status role="status" hidden></p>
+        </div>
+        </div>
+    </div>
+</header>

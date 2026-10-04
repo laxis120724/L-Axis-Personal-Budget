@@ -1,0 +1,41 @@
+<section class="calendar-page" data-calendar-page aria-labelledby="calendar-title">
+    <div class="calendar-page__heading">
+        <h1 id="calendar-title">Calendar</h1>
+        <label class="calendar-wallet">Wallet
+            <select data-calendar-wallet aria-label="Calendar wallet"><option value="all">All wallets</option><option value="personal">My Money</option></select>
+        </label>
+    </div>
+    <p class="calendar-status" data-calendar-status role="status" hidden></p>
+    <div class="calendar-summary" aria-label="Due date summary">
+        <div><span>Due today</span><strong data-calendar-today-count>—</strong></div>
+        <div><span>This month</span><strong data-calendar-month-count>—</strong></div>
+        <div><span>Overdue</span><strong data-calendar-overdue-count>—</strong></div>
+    </div>
+    <div class="calendar-surface">
+        <div class="calendar-toolbar">
+            <div class="calendar-month-navigation">
+                <button type="button" class="calendar-arrow" data-calendar-prev aria-label="Previous month">‹</button>
+                <h2 data-calendar-month-label></h2>
+                <button type="button" class="calendar-arrow" data-calendar-next aria-label="Next month">›</button>
+            </div>
+            <button type="button" class="calendar-button" data-calendar-today>Today</button>
+        </div>
+        <div class="calendar-jump">
+            <label>Month <input type="month" data-calendar-month aria-label="Choose calendar month" min="1000-01" max="9999-12"></label>
+            <label>Date <input type="date" data-calendar-date aria-label="Go to date" min="1000-01-01" max="9999-12-31"></label>
+        </div>
+        <div class="calendar-weekdays" aria-hidden="true"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div>
+        <div class="calendar-grid" data-calendar-grid aria-label="Calendar dates"></div>
+        <div class="calendar-legend" aria-label="Calendar categories">
+            <span data-kind="debt">Debt</span><span data-kind="lend">Loans</span><span data-kind="subscriptions">Subscriptions</span><span data-kind="savings">Savings goals</span>
+        </div>
+    </div>
+    <dialog class="calendar-day-dialog" data-calendar-dialog aria-labelledby="calendar-day-title">
+        <div class="calendar-day-dialog__heading"><div><span>Due dates</span><h2 id="calendar-day-title" data-calendar-day-title></h2></div>
+            <button type="button" class="calendar-close" data-calendar-close aria-label="Close date details">×</button>
+        </div>
+        <p class="calendar-status" data-calendar-day-status role="status" hidden></p>
+        <div class="calendar-day-list" data-calendar-day-list></div>
+        <div class="calendar-day-dialog__footer"><button type="button" class="calendar-button" data-calendar-close>Close</button></div>
+    </dialog>
+</section>
